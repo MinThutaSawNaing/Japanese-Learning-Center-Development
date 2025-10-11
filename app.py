@@ -1,0 +1,610 @@
+import sqlite3
+import os
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
+from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
+import base64
+from io import BytesIO
+import qrcode
+from flask_socketio import SocketIO, emit, join_room, leave_room, disconnect
+import logging
+
+app = Flask(__name__)
+app.secret_key = 'japanese_learning_secret_key_change_in_production'  # Change this in production
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Initialize SocketIO
+socketio = SocketIO(app, cors_allowed_origins="*", logger=True, engineio_logger=True)
+
+# Database initialization
+def init_db():
+    conn = sqlite3.connect('japanese_learning.db')
+    cursor = conn.cursor()
+    
+    # Create users table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        is_admin INTEGER DEFAULT 0
+    )
+    ''')
+    
+    # Create courses table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS courses (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        level TEXT UNIQUE NOT NULL,
+        description TEXT NOT NULL,
+        content TEXT NOT NULL
+    )
+    ''')
+    
+    # Create purchases table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS purchases (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        course_id INTEGER NOT NULL,
+        status TEXT DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (id),
+        FOREIGN KEY (course_id) REFERENCES courses (id)
+    )
+    ''')
+    
+    # Check if admin user exists, if not create one
+    cursor.execute('SELECT * FROM users WHERE email = "admin@example.com"')
+    if not cursor.fetchone():
+        cursor.execute('''
+        INSERT INTO users (email, password_hash, is_admin)
+        VALUES (?, ?, ?)
+        ''', ('admin@example.com', generate_password_hash('admin123'), 1))
+    
+    # Check if courses exist, if not create them
+    cursor.execute('SELECT * FROM courses')
+    if not cursor.fetchone():
+        courses_data = [
+            ('N5', 'Beginner Level - Basic Japanese', 
+             'N5 Course Content: Hiragana, Katakana, basic grammar, simple conversations. This level focuses on understanding basic Japanese phrases and expressions used in daily life.'),
+            ('N4', 'Elementary Level - Basic Japanese', 
+             'N4 Course Content: More grammar structures, vocabulary building, reading comprehension. Students learn to understand basic Japanese and read simple sentences.'),
+            ('N3', 'Intermediate Level - Japanese', 
+             'N3 Course Content: Complex grammar, kanji, reading passages, listening exercises. This level bridges the gap between basic and advanced Japanese.'),
+            ('N2', 'Upper Intermediate Level - Japanese', 
+             'N2 Course Content: Advanced grammar, extensive vocabulary, complex reading materials. Students can understand Japanese used in everyday situations and in a variety of circumstances.'),
+            ('N1', 'Advanced Level - Japanese', 
+             'N1 Course Content: Native-level fluency, specialized vocabulary, nuanced expressions. This is the highest level of Japanese language proficiency.')
+        ]
+        cursor.executemany('INSERT INTO courses (level, description, content) VALUES (?, ?, ?)', courses_data)
+    
+    conn.commit()
+    conn.close()
+
+# Initialize database on app start
+init_db()
+
+# Helper function to get database connection
+def get_db():
+    conn = sqlite3.connect('japanese_learning.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+# Decorator to require login
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return jsonify({'success': False, 'message': 'Login required', 'redirect': '/#auth'})
+        return f(*args, **kwargs)
+    return decorated_function
+
+# Decorator to require admin login
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session or session.get('is_admin') != 1:
+            return jsonify({'success': False, 'message': 'Admin access required'})
+        return f(*args, **kwargs)
+    return decorated_function
+
+# Socket.IO event handlers
+@socketio.on('connect')
+def handle_connect():
+    logger.info(f"Client connected: {request.sid}")
+    
+    # Check if user is logged in
+    if 'user_id' in session:
+        user_id = session['user_id']
+        is_admin = session.get('is_admin', 0)
+        
+        # Join user-specific room
+        join_room(f"user_{user_id}")
+        logger.info(f"User {user_id} joined room user_{user_id}")
+        
+        # Join admin room if user is admin
+        if is_admin == 1:
+            join_room('admin')
+            logger.info(f"Admin {user_id} joined admin room")
+            
+            # Send current purchases to newly connected admin
+            try:
+                conn = get_db()
+                cursor = conn.cursor()
+                cursor.execute('''
+                SELECT p.id, u.email, c.level, p.status
+                FROM purchases p
+                JOIN users u ON p.user_id = u.id
+                JOIN courses c ON p.course_id = c.id
+                ORDER BY p.id DESC
+                ''')
+                purchases = [dict(row) for row in cursor.fetchall()]
+                conn.close()
+                
+                emit('initial_purchases', {'purchases': purchases})
+            except Exception as e:
+                logger.error(f"Error sending initial purchases: {e}")
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    logger.info(f"Client disconnected: {request.sid}")
+
+@socketio.on('join_user_room')
+def handle_join_user_room(data):
+    if 'user_id' in session:
+        user_id = session['user_id']
+        join_room(f"user_{user_id}")
+        emit('room_joined', {'room': f"user_{user_id}"})
+        logger.info(f"User {user_id} explicitly joined room user_{user_id}")
+
+@socketio.on('join_admin_room')
+def handle_join_admin_room():
+    if 'user_id' in session and session.get('is_admin') == 1:
+        join_room('admin')
+        emit('room_joined', {'room': 'admin'})
+        logger.info(f"Admin {session['user_id']} explicitly joined admin room")
+
+# Routes
+@app.route('/')
+def index():
+    return render_template('main.html')
+
+@app.route('/register', methods=['POST'])
+def register():
+    email = request.form.get('email')
+    password = request.form.get('password')
+    
+    if not email or not password:
+        return jsonify({'success': False, 'message': 'Email and password are required'})
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    try:
+        # Check if user already exists
+        cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
+        if cursor.fetchone():
+            conn.close()
+            return jsonify({'success': False, 'message': 'Email already exists'})
+        
+        # Create new user
+        password_hash = generate_password_hash(password)
+        cursor.execute('INSERT INTO users (email, password_hash) VALUES (?, ?)', (email, password_hash))
+        conn.commit()
+        
+        # Get the new user's ID
+        user_id = cursor.lastrowid
+        conn.close()
+        
+        # Log in the new user
+        session['user_id'] = user_id
+        session['is_admin'] = 0
+        
+        return jsonify({'success': True, 'message': 'Registration successful', 'user_id': user_id})
+        
+    except Exception as e:
+        logger.error(f"Registration error: {e}")
+        conn.close()
+        return jsonify({'success': False, 'message': 'Registration failed'})
+
+@app.route('/login', methods=['POST'])
+def login():
+    email = request.form.get('email')
+    password = request.form.get('password')
+    
+    if not email or not password:
+        return jsonify({'success': False, 'message': 'Email and password are required'})
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
+        user = cursor.fetchone()
+        conn.close()
+        
+        if not user or not check_password_hash(user['password_hash'], password):
+            return jsonify({'success': False, 'message': 'Invalid email or password'})
+        
+        session['user_id'] = user['id']
+        session['is_admin'] = user['is_admin']
+        
+        return jsonify({
+            'success': True, 
+            'message': 'Login successful', 
+            'is_admin': user['is_admin'],
+            'user_id': user['id']
+        })
+        
+    except Exception as e:
+        logger.error(f"Login error: {e}")
+        conn.close()
+        return jsonify({'success': False, 'message': 'Login failed'})
+
+@app.route('/logout')
+def logout():
+    user_id = session.get('user_id')
+    is_admin = session.get('is_admin', 0)
+    
+    session.clear()
+    
+    # Notify Socket.IO about logout
+    if user_id:
+        socketio.emit('user_logout', {'user_id': user_id}, room='admin')
+        logger.info(f"User {user_id} logged out")
+    
+    return jsonify({'success': True, 'message': 'Logged out successfully'})
+
+@app.route('/courses')
+@login_required
+def courses():
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    try:
+        # Get all courses
+        cursor.execute('SELECT * FROM courses')
+        courses = cursor.fetchall()
+        
+        # Get user's purchases
+        cursor.execute('SELECT course_id, status FROM purchases WHERE user_id = ?', (session['user_id'],))
+        purchases = {row['course_id']: row['status'] for row in cursor.fetchall()}
+        
+        conn.close()
+        
+        courses_data = []
+        for course in courses:
+            course_dict = dict(course)
+            course_dict['purchased'] = course['id'] in purchases
+            course_dict['status'] = purchases.get(course['id'], None)
+            courses_data.append(course_dict)
+        
+        return jsonify({'courses': courses_data})
+        
+    except Exception as e:
+        logger.error(f"Load courses error: {e}")
+        conn.close()
+        return jsonify({'success': False, 'message': 'Failed to load courses'})
+
+@app.route('/purchase/<level>')
+@login_required
+def purchase(level):
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    try:
+        # Get course ID
+        cursor.execute('SELECT id FROM courses WHERE level = ?', (level,))
+        course = cursor.fetchone()
+        
+        if not course:
+            conn.close()
+            return jsonify({'success': False, 'message': 'Course not found'})
+        
+        # Check if already purchased
+        cursor.execute('SELECT id, status FROM purchases WHERE user_id = ? AND course_id = ?', 
+                      (session['user_id'], course['id']))
+        purchase = cursor.fetchone()
+        
+        if purchase:
+            conn.close()
+            return jsonify({
+                'success': False, 
+                'message': 'Already purchased', 
+                'status': purchase['status']
+            })
+        
+        # Create a new purchase record with pending status
+        cursor.execute('INSERT INTO purchases (user_id, course_id, status) VALUES (?, ?, ?)',
+                      (session['user_id'], course['id'], 'pending'))
+        conn.commit()
+        
+        # Get purchase ID
+        purchase_id = cursor.lastrowid
+        
+        # Get user email for notification
+        cursor.execute('SELECT email FROM users WHERE id = ?', (session['user_id'],))
+        user_email = cursor.fetchone()[0]
+        
+        # Generate a dummy QR code for KBZ Pay
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(f"KBZ_PAY_DUMMY:{level}:{session['user_id']}")
+        qr.make(fit=True)
+        
+        img = qr.make_image(fill_color="black", back_color="white")
+        
+        # Convert image to base64 for embedding in HTML
+        buffered = BytesIO()
+        img.save(buffered, format="PNG")
+        img_str = base64.b64encode(buffered.getvalue()).decode()
+        
+        conn.close()
+        
+        # Prepare purchase data for notification
+        purchase_data = {
+            'id': purchase_id,
+            'user_email': user_email,
+            'course_level': level,
+            'course_id': course['id'],
+            'status': 'pending',
+            'user_id': session['user_id']
+        }
+        
+        # Emit real-time notification to admin room
+        socketio.emit('new_purchase', purchase_data, room='admin')
+        logger.info(f"New purchase emitted: {purchase_data}")
+        
+        return jsonify({
+            'success': True, 
+            'message': 'Purchase initiated. Please complete payment.',
+            'qr_code': img_str,
+            'purchase_id': purchase_id
+        })
+        
+    except Exception as e:
+        logger.error(f"Purchase error: {e}")
+        conn.close()
+        return jsonify({'success': False, 'message': 'Purchase failed'})
+
+@app.route('/admin')
+def admin_login_page():
+    return render_template('main.html', admin_login=True)
+
+@app.route('/admin/login', methods=['POST'])
+def admin_login():
+    email = request.form.get('email')
+    password = request.form.get('password')
+    
+    if not email or not password:
+        return jsonify({'success': False, 'message': 'Email and password are required'})
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute('SELECT * FROM users WHERE email = ? AND is_admin = 1', (email,))
+        admin = cursor.fetchone()
+        conn.close()
+        
+        if not admin or not check_password_hash(admin['password_hash'], password):
+            return jsonify({'success': False, 'message': 'Invalid admin credentials'})
+        
+        session['user_id'] = admin['id']
+        session['is_admin'] = 1
+        
+        return jsonify({
+            'success': True, 
+            'message': 'Admin login successful',
+            'user_id': admin['id']
+        })
+        
+    except Exception as e:
+        logger.error(f"Admin login error: {e}")
+        conn.close()
+        return jsonify({'success': False, 'message': 'Admin login failed'})
+
+@app.route('/admin/dashboard')
+@admin_required
+def admin_dashboard():
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    try:
+        # Get all purchases with user and course info
+        cursor.execute('''
+        SELECT p.id, u.email, c.level, p.status
+        FROM purchases p
+        JOIN users u ON p.user_id = u.id
+        JOIN courses c ON p.course_id = c.id
+        ORDER BY p.id DESC
+        ''')
+        purchases = cursor.fetchall()
+        
+        conn.close()
+        
+        return render_template('main.html', admin_dashboard=True, purchases=purchases)
+        
+    except Exception as e:
+        logger.error(f"Admin dashboard error: {e}")
+        conn.close()
+        return render_template('main.html', admin_dashboard=True, purchases=[])
+
+@app.route('/admin/dashboard/data')
+@admin_required
+def admin_dashboard_data():
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    try:
+        # Get all purchases with user and course info
+        cursor.execute('''
+        SELECT p.id, u.email, c.level, p.status, p.user_id
+        FROM purchases p
+        JOIN users u ON p.user_id = u.id
+        JOIN courses c ON p.course_id = c.id
+        ORDER BY p.id DESC
+        ''')
+        purchases = [dict(row) for row in cursor.fetchall()]
+        
+        conn.close()
+        
+        return jsonify({'purchases': purchases})
+        
+    except Exception as e:
+        logger.error(f"Admin dashboard data error: {e}")
+        conn.close()
+        return jsonify({'purchases': []})
+
+@app.route('/admin/approve/<int:purchase_id>', methods=['POST'])
+@admin_required
+def approve_purchase(purchase_id):
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    try:
+        # Get purchase details before updating
+        cursor.execute('''
+        SELECT p.user_id, c.level, u.email
+        FROM purchases p
+        JOIN courses c ON p.course_id = c.id
+        JOIN users u ON p.user_id = u.id
+        WHERE p.id = ?
+        ''', (purchase_id,))
+        purchase_data = cursor.fetchone()
+        
+        if not purchase_data:
+            conn.close()
+            return jsonify({'success': False, 'message': 'Purchase not found'})
+        
+        # Update purchase status
+        cursor.execute('UPDATE purchases SET status = "approved" WHERE id = ?', (purchase_id,))
+        conn.commit()
+        
+        # Get updated purchase data
+        cursor.execute('''
+        SELECT p.id, u.email, c.level, p.status, p.user_id
+        FROM purchases p
+        JOIN users u ON p.user_id = u.id
+        JOIN courses c ON p.course_id = c.id
+        WHERE p.id = ?
+        ''', (purchase_id,))
+        updated_purchase = dict(cursor.fetchone())
+        
+        conn.close()
+        
+        # Emit real-time notification to admin room
+        socketio.emit('purchase_updated', {
+            'purchase': updated_purchase,
+            'action': 'approved'
+        }, room='admin')
+        
+        # Emit real-time notification to specific user
+        socketio.emit('purchase_status_changed', {
+            'course_level': purchase_data['level'],
+            'status': 'approved',
+            'message': f'Your purchase for {purchase_data["level"]} has been approved!'
+        }, room=f"user_{purchase_data['user_id']}")
+        
+        logger.info(f"Purchase {purchase_id} approved for user {purchase_data['user_id']}")
+        
+        return jsonify({'success': True, 'message': 'Purchase approved'})
+        
+    except Exception as e:
+        logger.error(f"Approve purchase error: {e}")
+        conn.close()
+        return jsonify({'success': False, 'message': 'Failed to approve purchase'})
+
+@app.route('/admin/reject/<int:purchase_id>', methods=['POST'])
+@admin_required
+def reject_purchase(purchase_id):
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    try:
+        # Get purchase details before updating
+        cursor.execute('''
+        SELECT p.user_id, c.level, u.email
+        FROM purchases p
+        JOIN courses c ON p.course_id = c.id
+        JOIN users u ON p.user_id = u.id
+        WHERE p.id = ?
+        ''', (purchase_id,))
+        purchase_data = cursor.fetchone()
+        
+        if not purchase_data:
+            conn.close()
+            return jsonify({'success': False, 'message': 'Purchase not found'})
+        
+        # Update purchase status
+        cursor.execute('UPDATE purchases SET status = "rejected" WHERE id = ?', (purchase_id,))
+        conn.commit()
+        
+        # Get updated purchase data
+        cursor.execute('''
+        SELECT p.id, u.email, c.level, p.status, p.user_id
+        FROM purchases p
+        JOIN users u ON p.user_id = u.id
+        JOIN courses c ON p.course_id = c.id
+        WHERE p.id = ?
+        ''', (purchase_id,))
+        updated_purchase = dict(cursor.fetchone())
+        
+        conn.close()
+        
+        # Emit real-time notification to admin room
+        socketio.emit('purchase_updated', {
+            'purchase': updated_purchase,
+            'action': 'rejected'
+        }, room='admin')
+        
+        # Emit real-time notification to specific user
+        socketio.emit('purchase_status_changed', {
+            'course_level': purchase_data['level'],
+            'status': 'rejected',
+            'message': f'Your purchase for {purchase_data["level"]} has been rejected'
+        }, room=f"user_{purchase_data['user_id']}")
+        
+        logger.info(f"Purchase {purchase_id} rejected for user {purchase_data['user_id']}")
+        
+        return jsonify({'success': True, 'message': 'Purchase rejected'})
+        
+    except Exception as e:
+        logger.error(f"Reject purchase error: {e}")
+        conn.close()
+        return jsonify({'success': False, 'message': 'Failed to reject purchase'})
+
+@app.route('/user/status')
+def user_status():
+    if 'user_id' in session:
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        try:
+            cursor.execute('SELECT email, is_admin FROM users WHERE id = ?', (session['user_id'],))
+            user = cursor.fetchone()
+            conn.close()
+            
+            if user:
+                return jsonify({
+                    'logged_in': True,
+                    'email': user['email'],
+                    'is_admin': user['is_admin'],
+                    'user_id': session['user_id']
+                })
+        except Exception as e:
+            logger.error(f"User status error: {e}")
+            conn.close()
+    
+    return jsonify({'logged_in': False})
+
+if __name__ == '__main__':
+    socketio.run(app, host='0.0.0.0', port=7777, debug=True)
