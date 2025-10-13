@@ -1,11 +1,12 @@
 import sqlite3
 import os
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import base64
 from io import BytesIO
-import qrcode
+import random
+import string
 from flask_socketio import SocketIO, emit, join_room, leave_room, disconnect
 import logging
 
@@ -18,6 +19,10 @@ logger = logging.getLogger(__name__)
 
 # Initialize SocketIO
 socketio = SocketIO(app, cors_allowed_origins="*", logger=True, engineio_logger=True)
+
+# Create static folders if they don't exist
+os.makedirs('static/images', exist_ok=True)
+os.makedirs('uploads', exist_ok=True)
 
 # Database initialization
 def init_db():
@@ -70,21 +75,20 @@ def init_db():
     if not cursor.fetchone():
         courses_data = [
             ('N5', 'Beginner Level - Basic Japanese', 
-             'N5 Course Content: Hiragana, Katakana, basic grammar, simple conversations. This level focuses on understanding basic Japanese phrases and expressions used in daily life.'),
+            'N5 Course Content: Hiragana, Katakana, basic grammar, simple conversations. This level focuses on understanding basic Japanese phrases and expressions used in daily life.\n\nသင်ခန်းစာများ အားဝယ်ယူရာတွင်လွယ်ကူစေရန် KBZ payဖြင့်ငွေချေနိုင်ပါတယ် ငွေချေရန် scan ဖတ်ပါ note တွင်ဝယ်ယူသည့် သင်ခန်းစာနံပါတ်ကိုထည့်သွင်းရေးသားပေးပါ။ ဥပမာ: N5, N3။ ငွေလွှဲပြီးတစ်နာရီအတွင်း approve လုပ်ပေးပါမယ်။ ကျေးဇူးတင်ပါတယ်။'),
             ('N4', 'Elementary Level - Basic Japanese', 
-             'N4 Course Content: More grammar structures, vocabulary building, reading comprehension. Students learn to understand basic Japanese and read simple sentences.'),
+            'N4 Course Content: More grammar structures, vocabulary building, reading comprehension. Students learn to understand basic Japanese and read simple sentences.\n\nသင်ခန်းစာများ အားဝယ်ယူရာတွင်လွယ်ကူစေရန် KBZ payဖြင့်ငွေချေနိုင်ပါတယ် ငွေချေရန် scan ဖတ်ပါ note တွင်ဝယ်ယူသည့် သင်ခန်းစာနံပါတ်ကိုထည့်သွင်းရေးသားပေးပါ။ ဥပမာ: N5, N3။ ငွေလွှဲပြီးတစ်နာရီအတွင်း approve လုပ်ပေးပါမယ်။ ကျေးဇူးတင်ပါတယ်။'),
             ('N3', 'Intermediate Level - Japanese', 
-             'N3 Course Content: Complex grammar, kanji, reading passages, listening exercises. This level bridges the gap between basic and advanced Japanese.'),
+            'N3 Course Content: Complex grammar, kanji, reading passages, listening exercises. This level bridges the gap between basic and advanced Japanese.\n\nသင်ခန်းစာများ အားဝယ်ယူရာတွင်လွယ်ကူစေရန် KBZ payဖြင့်ငွေချေနိုင်ပါတယ် ငွေချေရန် scan ဖတ်ပါ note တွင်ဝယ်ယူသည့် သင်ခန်း‌စာနံပါတ်ကိုထည့်သွင်းရေးသားပေးပါ။ ဥပမာ: N5, N3။ ငွေလွှဲပြီးတစ်နာရီအတွင်း approve လုပ်ပေးပါမယ်။ ကျေးဇူးတင်ပါတယ်။'),
             ('N2', 'Upper Intermediate Level - Japanese', 
-             'N2 Course Content: Advanced grammar, extensive vocabulary, complex reading materials. Students can understand Japanese used in everyday situations and in a variety of circumstances.'),
+            'N2 Course Content: Advanced grammar, extensive vocabulary, complex reading materials. Students can understand Japanese used in everyday situations and in a variety of circumstances.\n\nသင်ခန်းစာများ အားဝယ်ယူရာတွင်လွယ်ကူစေရန် KBZ payဖြင့်ငွေချေနိုင်ပါတယ် ငွေချေရန် scan ဖတ်ပါ note တွင်ဝယ်ယူသည့် သင်ခန်းစာနံပါတ်ကိုထည့်သွင်းရေးသားပေးပါ။ ဥပမာ: N5, N3။ ငွေလွှဲပြီးတစ်နာရီအတွင်း approve လုပ်ပေးပါမယ်။ ကျေးဇူးတင်ပါတယ်။'),
             ('N1', 'Advanced Level - Japanese', 
-             'N1 Course Content: Native-level fluency, specialized vocabulary, nuanced expressions. This is the highest level of Japanese language proficiency.')
+            'N1 Course Content: Native-level fluency, specialized vocabulary, nuanced expressions. This is the highest level of Japanese language proficiency.\n\nသင်ခန်းစာများ အားဝယ်ယူရာတွင်လွယ်ကူစေရန် KBZ payဖြင့်ငွေချေနိုင်ပါတယ် ငွေချေရန် scan ဖတ်ပါ note တွင်ဝယ်ယူသည့် သင်ခန်းစာနံပါတ်ကိုထည့်သွင်းရေးသားပေးပါ။ ဥပမာ: N5, N3။ ငွေလွှဲပြီးတစ်နာရီအတွင်း approve လုပ်ပေးပါမယ်။ ကျေးဇူးတင်ပါတယ်။')
         ]
         cursor.executemany('INSERT INTO courses (level, description, content) VALUES (?, ?, ?)', courses_data)
-    
+            
     conn.commit()
     conn.close()
-
 # Initialize database on app start
 init_db()
 
@@ -93,6 +97,12 @@ def get_db():
     conn = sqlite3.connect('japanese_learning.db')
     conn.row_factory = sqlite3.Row
     return conn
+
+# Generate random 4-digit CAPTCHA
+def generate_captcha():
+    captcha = ''.join(random.choices(string.digits, k=4))
+    session['captcha'] = captcha
+    return captcha
 
 # Decorator to require login
 def login_required(f):
@@ -171,15 +181,31 @@ def handle_join_admin_room():
 # Routes
 @app.route('/')
 def index():
+    # Generate a new CAPTCHA for the session
+    generate_captcha()
     return render_template('main.html')
+
+@app.route('/static/images/<filename>')
+def serve_image(filename):
+    return send_from_directory('static/images', filename)
+
+@app.route('/get-captcha')
+def get_captcha():
+    captcha = generate_captcha()
+    return jsonify({'captcha': captcha})
 
 @app.route('/register', methods=['POST'])
 def register():
     email = request.form.get('email')
     password = request.form.get('password')
+    captcha = request.form.get('captcha')
     
     if not email or not password:
         return jsonify({'success': False, 'message': 'Email and password are required'})
+    
+    # Verify CAPTCHA
+    if not captcha or captcha != session.get('captcha'):
+        return jsonify({'success': False, 'message': 'Invalid CAPTCHA'})
     
     conn = get_db()
     cursor = conn.cursor()
@@ -204,6 +230,9 @@ def register():
         session['user_id'] = user_id
         session['is_admin'] = 0
         
+        # Generate a new CAPTCHA after successful registration
+        generate_captcha()
+        
         return jsonify({'success': True, 'message': 'Registration successful', 'user_id': user_id})
         
     except Exception as e:
@@ -215,9 +244,14 @@ def register():
 def login():
     email = request.form.get('email')
     password = request.form.get('password')
+    captcha = request.form.get('captcha')
     
     if not email or not password:
         return jsonify({'success': False, 'message': 'Email and password are required'})
+    
+    # Verify CAPTCHA
+    if not captcha or captcha != session.get('captcha'):
+        return jsonify({'success': False, 'message': 'Invalid CAPTCHA'})
     
     conn = get_db()
     cursor = conn.cursor()
@@ -232,6 +266,9 @@ def login():
         
         session['user_id'] = user['id']
         session['is_admin'] = user['is_admin']
+        
+        # Generate a new CAPTCHA after successful login
+        generate_captcha()
         
         return jsonify({
             'success': True, 
@@ -251,6 +288,9 @@ def logout():
     is_admin = session.get('is_admin', 0)
     
     session.clear()
+    
+    # Generate a new CAPTCHA after logout
+    generate_captcha()
     
     # Notify Socket.IO about logout
     if user_id:
@@ -330,24 +370,10 @@ def purchase(level):
         cursor.execute('SELECT email FROM users WHERE id = ?', (session['user_id'],))
         user_email = cursor.fetchone()[0]
         
-        # Generate a dummy QR code for KBZ Pay
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
-        )
-        qr.add_data(f"KBZ_PAY_DUMMY:{level}:{session['user_id']}")
-        qr.make(fit=True)
-        
-        img = qr.make_image(fill_color="black", back_color="white")
-        
-        # Convert image to base64 for embedding in HTML
-        buffered = BytesIO()
-        img.save(buffered, format="PNG")
-        img_str = base64.b64encode(buffered.getvalue()).decode()
-        
         conn.close()
+        
+        # Use the proper URL for the QR code
+        qr_code_url = url_for('serve_image', filename='kpay.jpg', _external=True)
         
         # Prepare purchase data for notification
         purchase_data = {
@@ -366,7 +392,7 @@ def purchase(level):
         return jsonify({
             'success': True, 
             'message': 'Purchase initiated. Please complete payment.',
-            'qr_code': img_str,
+            'qr_code_url': qr_code_url,
             'purchase_id': purchase_id
         })
         
@@ -377,15 +403,22 @@ def purchase(level):
 
 @app.route('/admin')
 def admin_login_page():
+    # Generate a new CAPTCHA for the session
+    generate_captcha()
     return render_template('main.html', admin_login=True)
 
 @app.route('/admin/login', methods=['POST'])
 def admin_login():
     email = request.form.get('email')
     password = request.form.get('password')
+    captcha = request.form.get('captcha')
     
     if not email or not password:
         return jsonify({'success': False, 'message': 'Email and password are required'})
+    
+    # Verify CAPTCHA
+    if not captcha or captcha != session.get('captcha'):
+        return jsonify({'success': False, 'message': 'Invalid CAPTCHA'})
     
     conn = get_db()
     cursor = conn.cursor()
@@ -400,6 +433,9 @@ def admin_login():
         
         session['user_id'] = admin['id']
         session['is_admin'] = 1
+        
+        # Generate a new CAPTCHA after successful admin login
+        generate_captcha()
         
         return jsonify({
             'success': True, 
