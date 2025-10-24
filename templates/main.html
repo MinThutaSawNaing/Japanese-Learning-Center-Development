@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Japanese Learning Portal</title>
-    <link rel="icon" type="image/png" href="\static\images\icon.png">
+    <link rel="icon" type="image/png" href="..\static\images\icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -93,17 +93,22 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        #modal-qr-code{
-            margin: 0 auto;
+        
+        .logo img {
+            margin-right: 10px;
+            height: 60px;
+            width: auto;
         }
         
         nav {
             display: flex;
+            align-items: center;
         }
         
         nav ul {
             display: flex;
             list-style: none;
+            align-items: center;
         }
         
         nav ul li {
@@ -305,7 +310,7 @@
             color: var(--text-color);
         }
         
-        .form-group input {
+        .form-group input, .form-group textarea, .form-group select {
             width: 100%;
             padding: 15px;
             border: 2px solid var(--light-gray);
@@ -315,7 +320,12 @@
             min-height: 48px;
         }
         
-        .form-group input:focus {
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
@@ -670,6 +680,11 @@
             color: var(--danger-color);
         }
         
+        .status-badge.replied {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: var(--secondary-color);
+        }
+        
         .action-buttons {
             display: flex;
             gap: 8px;
@@ -908,6 +923,249 @@
             color: var(--warning-color);
         }
         
+        /* Support section styles */
+        .support-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .support-option {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .support-option:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .support-option i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        .support-option h3 {
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+        
+        .support-option p {
+            color: var(--dark-gray);
+            font-size: 14px;
+        }
+        
+        .support-form {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+            display: none;
+        }
+        
+        .support-form.active {
+            display: block;
+        }
+        
+        .support-message {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .support-message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .support-message-type {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .support-message-type.teacher {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: var(--secondary-color);
+        }
+        
+        .support-message-type.support {
+            background-color: rgba(243, 156, 18, 0.2);
+            color: var(--warning-color);
+        }
+        
+        .support-message-subject {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .support-message-content {
+            margin-bottom: 10px;
+        }
+        
+        .support-message-footer {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--dark-gray);
+        }
+        
+        .reply-form {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--dark-gray);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .tab.active {
+            color: var(--primary-color);
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .message-list {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: var(--shadow-lg);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .message-item {
+            background-color: var(--beige);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .message-item.sent {
+            background-color: var(--primary-color);
+            color: white;
+            margin-left: 20%;
+        }
+        
+        .message-item.received {
+            background-color: var(--white);
+            color: var(--text-color);
+            margin-right: 20%;
+            border: 1px solid var(--light-gray);
+        }
+        
+        .message-header {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .message-content {
+            margin-bottom: 5px;
+            white-space: pre-wrap;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        .file-attachment {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--secondary-color);
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .file-attachment:hover {
+            background-color: rgba(52, 152, 219, 0.2);
+        }
+        
+        .file-attachment i {
+            font-size: 16px;
+        }
+        
+        /* Teacher message view modal */
+        .teacher-message-modal .modal-body {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .teacher-message-detail {
+            background-color: var(--beige);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .teacher-message-subject {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .teacher-message-content {
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+        }
+        
+        .teacher-message-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--dark-gray);
+        }
+        
         /* Mobile-specific styles */
         @media (max-width: 768px) {
             .container {
@@ -969,8 +1227,8 @@
                 font-size: 20px;
             }
             
-            .logo span {
-                font-size: 24px;
+            .logo img {
+                height: 50px;
             }
             
             .hero h1 {
@@ -1078,7 +1336,7 @@
                 padding: 25px 20px;
             }
             
-            .form-group input {
+            .form-group input, .form-group textarea, .form-group select {
                 padding: 12px;
                 font-size: 16px;
             }
@@ -1093,6 +1351,18 @@
                 left: 15px;
                 padding: 6px 10px;
                 font-size: 11px;
+            }
+            
+            .support-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .message-item.sent {
+                margin-left: 10%;
+            }
+            
+            .message-item.received {
+                margin-right: 10%;
             }
         }
         
@@ -1231,7 +1501,10 @@
     <header>
         <div class="container">
             <div class="header-content">
-                <div class="logo"><span>🈴</span> Japanese Learning Portal</div>
+                <div class="logo">
+                    <img src="../static/images/logohn.jpg" alt="logo"/>
+                    Han Nay Japanese Language Center
+                </div>
                 <button class="mobile-menu-toggle" id="mobile-menu-toggle">
                     <i class="fas fa-bars"></i>
                 </button>
@@ -1239,6 +1512,7 @@
                     <ul>
                         <li><a href="#" id="home-link">Home</a></li>
                         <li><a href="#" id="courses-link">Courses</a></li>
+                        <li><a href="#" id="support-link" style="display: none;">Support</a></li>
                         <li><a href="#" id="login-link" style="display: none;">Login</a></li>
                         <li><a href="#" id="register-link" style="display: none;">Register</a></li>
                         <li><a href="#" id="logout-link" style="display: none;">Logout</a></li>
@@ -1357,6 +1631,65 @@
             </div>
         </section>
 
+        <!-- Support Section -->
+        <section id="support-section" class="section" style="display: none;">
+            <h2 class="section-title">Support Center</h2>
+            
+            <div class="tabs">
+                <div class="tab active" id="support-messages-tab">Support Messages</div>
+                <div class="tab" id="teacher-messages-tab">Ask Teacher</div>
+                <div class="tab" id="new-message-tab">New Message</div>
+            </div>
+            
+            <div class="tab-content active" id="support-messages-content">
+                <div class="message-list" id="support-messages-list">
+                    <!-- Support messages will be loaded here -->
+                </div>
+            </div>
+            
+            <div class="tab-content" id="teacher-messages-content">
+                <div class="message-list" id="teacher-messages-list">
+                    <!-- Teacher messages will be loaded here -->
+                </div>
+            </div>
+            
+            <div class="tab-content" id="new-message-content">
+                <div class="support-options">
+                    <div class="support-option" id="get-support-option">
+                        <i class="fas fa-headset"></i>
+                        <h3>Get Support</h3>
+                        <p>Need technical help or have account issues? Contact our support team.</p>
+                    </div>
+                    <div class="support-option" id="ask-teacher-option">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <h3>Ask Teacher</h3>
+                        <p>Get help with your Japanese language questions from our teachers.</p>
+                    </div>
+                </div>
+                
+                <div class="support-form" id="support-form-container">
+                    <h3 id="support-form-title">Send Message</h3>
+                    <form id="support-form-element">
+                        <div class="form-group">
+                            <label for="support-subject"><i class="fas fa-heading"></i> Subject</label>
+                            <input type="text" id="support-subject" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="support-message"><i class="fas fa-comment"></i> Message</label>
+                            <textarea id="support-message" required></textarea>
+                        </div>
+                        <div class="form-group" id="file-upload-group" style="display: none;">
+                            <label for="support-file"><i class="fas fa-paperclip"></i> Attachment (Optional)</label>
+                            <input type="file" id="support-file" accept=".docx,.pdf,.txt,.jpeg,.jpg,.png">
+                            <small>Allowed formats: DOCX, PDF, TXT, JPEG, PNG (Max 10MB)</small>
+                        </div>
+                        <input type="hidden" id="support-type" value="">
+                        <button type="submit" class="btn" style="width: 100%;">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
         <!-- Admin Login Section -->
         <section id="admin-login-section" class="section" style="display: none;">
             <div class="auth-container">
@@ -1388,21 +1721,70 @@
         <!-- Admin Dashboard Section -->
         <section id="admin-dashboard-section" class="section" style="display: none;">
             <h2 class="section-title">Admin Dashboard</h2>
-            <div class="table-container">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>User Email</th>
-                            <th>Course</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-purchases-tbody">
-                        <!-- Purchases will be loaded here -->
-                    </tbody>
-                </table>
+            
+            <div class="tabs">
+                <div class="tab active" id="purchases-tab">Purchases</div>
+                <div class="tab" id="support-tab">Support Messages</div>
+                <div class="tab" id="teacher-tab">Teacher Messages</div>
+            </div>
+            
+            <div class="tab-content active" id="purchases-content">
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User Email</th>
+                                <th>Course</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-purchases-tbody">
+                            <!-- Purchases will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="support-content">
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User Email</th>
+                                <th>Type</th>
+                                <th>Subject</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-support-tbody">
+                            <!-- Support messages will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="teacher-content">
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User Email</th>
+                                <th>Subject</th>
+                                <th>File</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-teacher-tbody">
+                            <!-- Teacher messages will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
     </main>
@@ -1462,6 +1844,65 @@
         </div>
     </div>
 
+    <!-- Support Reply Modal -->
+    <div id="support-reply-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Reply to Support Message</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="support-message">
+                    <div class="support-message-header">
+                        <span class="support-message-type" id="reply-message-type"></span>
+                        <span id="reply-message-email"></span>
+                    </div>
+                    <div class="support-message-subject" id="reply-message-subject"></div>
+                    <div class="support-message-content" id="reply-message-content"></div>
+                    <div class="support-message-footer">
+                        <span id="reply-message-date"></span>
+                    </div>
+                </div>
+                
+                <form id="reply-form-element">
+                    <div class="form-group">
+                        <label for="reply-message"><i class="fas fa-reply"></i> Your Reply</label>
+                        <textarea id="reply-message" required></textarea>
+                    </div>
+                    <input type="hidden" id="reply-message-id" value="">
+                    <input type="hidden" id="reply-message-type-field" value="">
+                    <button type="submit" class="btn" style="width: 100%;">Send Reply</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teacher Message View Modal -->
+    <div id="teacher-message-modal" class="modal teacher-message-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Teacher Message Details</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="teacher-message-detail">
+                    <div class="teacher-message-subject" id="teacher-view-subject"></div>
+                    <div class="teacher-message-content" id="teacher-view-message"></div>
+                    <div class="teacher-message-meta">
+                        <span id="teacher-view-email"></span>
+                        <span id="teacher-view-date"></span>
+                    </div>
+                    <div id="teacher-view-file-container" style="margin-top: 15px;"></div>
+                </div>
+                
+                <div id="teacher-reply-section" style="margin-top: 20px; display: none;">
+                    <h4>Teacher's Reply:</h4>
+                    <div id="teacher-view-reply" style="background-color: var(--beige); padding: 15px; border-radius: 10px; margin-top: 10px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Notification -->
     <div id="notification" class="notification">
         <i class="fas fa-check-circle"></i>
@@ -1514,11 +1955,14 @@
         const homeSection = document.getElementById('home-section');
         const authSection = document.getElementById('auth-section');
         const coursesSection = document.getElementById('courses-section');
+        const supportSection = document.getElementById('support-section');
         const adminLoginSection = document.getElementById('admin-login-section');
         const adminDashboardSection = document.getElementById('admin-dashboard-section');
         const loginForm = document.getElementById('login-form');
         const registerForm = document.getElementById('register-form');
         const courseModal = document.getElementById('course-modal');
+        const supportReplyModal = document.getElementById('support-reply-modal');
+        const teacherMessageModal = document.getElementById('teacher-message-modal');
         const notification = document.getElementById('notification');
         const notificationMessage = document.getElementById('notification-message');
         const connectionStatus = document.getElementById('connection-status');
@@ -1529,10 +1973,36 @@
         // Navigation links
         const homeLink = document.getElementById('home-link');
         const coursesLink = document.getElementById('courses-link');
+        const supportLink = document.getElementById('support-link');
         const loginLink = document.getElementById('login-link');
         const registerLink = document.getElementById('register-link');
         const logoutLink = document.getElementById('logout-link');
         const adminLink = document.getElementById('admin-link');
+        
+        // Support elements
+        const getSupportOption = document.getElementById('get-support-option');
+        const askTeacherOption = document.getElementById('ask-teacher-option');
+        const supportFormContainer = document.getElementById('support-form-container');
+        const supportFormTitle = document.getElementById('support-form-title');
+        const supportType = document.getElementById('support-type');
+        const fileUploadGroup = document.getElementById('file-upload-group');
+        
+        // Support tabs
+        const supportMessagesTab = document.getElementById('support-messages-tab');
+        const teacherMessagesTab = document.getElementById('teacher-messages-tab');
+        const newMessageTab = document.getElementById('new-message-tab');
+        const supportMessagesContent = document.getElementById('support-messages-content');
+        const teacherMessagesContent = document.getElementById('teacher-messages-content');
+        const newMessageContent = document.getElementById('new-message-content');
+        
+        // Admin dashboard tabs
+        const purchasesTab = document.getElementById('purchases-tab');
+        const supportTab = document.getElementById('support-tab');
+        const teacherTab = document.getElementById('teacher-tab');
+        const purchasesContent = document.getElementById('purchases-content');
+        const supportContent = document.getElementById('support-content');
+        const teacherContent = document.getElementById('teacher-content');
+        
         // Course resources for each level
         const courseResources = {
             'N5': {
@@ -1704,6 +2174,20 @@
                 }
             });
             
+            // Listen for initial support messages (admin only)
+            socket.on('initial_support_messages', (data) => {
+                if (currentUser && currentUser.is_admin && data.messages) {
+                    loadSupportMessagesIntoTable(data.messages);
+                }
+            });
+            
+            // Listen for initial teacher messages (admin only)
+            socket.on('initial_teacher_messages', (data) => {
+                if (currentUser && currentUser.is_admin && data.messages) {
+                    loadTeacherMessagesIntoTable(data.messages);
+                }
+            });
+            
             // Listen for new purchases (admin only)
             socket.on('new_purchase', (data) => {
                 if (currentUser && currentUser.is_admin) {
@@ -1712,11 +2196,43 @@
                 }
             });
             
+            // Listen for new support messages (admin only)
+            socket.on('new_support_message', (data) => {
+                if (currentUser && currentUser.is_admin) {
+                    addNewSupportMessageToTable(data);
+                    showNotification(`New support message from ${data.user_email}: ${data.subject}`, 'info');
+                }
+            });
+            
+            // Listen for new teacher messages (admin only)
+            socket.on('new_teacher_message', (data) => {
+                if (currentUser && currentUser.is_admin) {
+                    addNewTeacherMessageToTable(data);
+                    showNotification(`New teacher message from ${data.user_email}: ${data.subject}`, 'info');
+                }
+            });
+            
             // Listen for purchase updates (admin only)
             socket.on('purchase_updated', (data) => {
                 if (currentUser && currentUser.is_admin) {
                     updatePurchaseInTable(data.purchase, data.action);
                     showNotification(`Purchase ${data.action} successfully`, 'success');
+                }
+            });
+            
+            // Listen for support message updates (admin only)
+            socket.on('support_message_updated', (data) => {
+                if (currentUser && currentUser.is_admin) {
+                    updateSupportMessageInTable(data.message, data.action);
+                    showNotification(`Support message ${data.action} successfully`, 'success');
+                }
+            });
+            
+            // Listen for teacher message updates (admin only)
+            socket.on('teacher_message_updated', (data) => {
+                if (currentUser && currentUser.is_admin) {
+                    updateTeacherMessageInTable(data.message, data.action);
+                    showNotification(`Teacher message ${data.action} successfully`, 'success');
                 }
             });
             
@@ -1733,6 +2249,24 @@
                         currentCourse.purchased = true;
                         showCourseModal();
                     }
+                }
+            });
+            
+            // Listen for support replies (user only)
+            socket.on('support_reply_received', (data) => {
+                if (currentUser && !currentUser.is_admin) {
+                    showNotification(data.message, 'info');
+                    // Update the specific message in the UI
+                    updateSupportMessageInUI(data.message_id, data.reply);
+                }
+            });
+            
+            // Listen for teacher replies (user only)
+            socket.on('teacher_reply_received', (data) => {
+                if (currentUser && !currentUser.is_admin) {
+                    showNotification(data.message, 'info');
+                    // Update the specific message in the UI
+                    updateTeacherMessageInUI(data.message_id, data.reply);
                 }
             });
             
@@ -1788,6 +2322,17 @@
                 loadCourses();
             } else {
                 showNotification('Please login to view courses', 'warning');
+                showSection('auth');
+            }
+        });
+
+        supportLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (currentUser) {
+                showSection('support');
+                loadUserMessages();
+            } else {
+                showNotification('Please login to access support', 'warning');
                 showSection('auth');
             }
         });
@@ -1855,6 +2400,94 @@
             }
         });
 
+        // Support form event listeners
+        getSupportOption.addEventListener('click', () => {
+            supportFormContainer.classList.add('active');
+            supportFormTitle.textContent = 'Get Support';
+            supportType.value = 'support';
+            fileUploadGroup.style.display = 'none';
+            document.getElementById('support-subject').focus();
+        });
+
+        askTeacherOption.addEventListener('click', () => {
+            supportFormContainer.classList.add('active');
+            supportFormTitle.textContent = 'Ask Teacher';
+            supportType.value = 'teacher';
+            fileUploadGroup.style.display = 'block';
+            document.getElementById('support-subject').focus();
+        });
+
+        document.getElementById('support-form-element').addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (!isProcessing) {
+                submitSupportMessage();
+            }
+        });
+
+        // Reply form event listener
+        document.getElementById('reply-form-element').addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (!isProcessing) {
+                submitReply();
+            }
+        });
+
+        // Support tabs
+        supportMessagesTab.addEventListener('click', () => {
+            supportMessagesTab.classList.add('active');
+            teacherMessagesTab.classList.remove('active');
+            newMessageTab.classList.remove('active');
+            supportMessagesContent.classList.add('active');
+            teacherMessagesContent.classList.remove('active');
+            newMessageContent.classList.remove('active');
+        });
+
+        teacherMessagesTab.addEventListener('click', () => {
+            teacherMessagesTab.classList.add('active');
+            supportMessagesTab.classList.remove('active');
+            newMessageTab.classList.remove('active');
+            teacherMessagesContent.classList.add('active');
+            supportMessagesContent.classList.remove('active');
+            newMessageContent.classList.remove('active');
+        });
+
+        newMessageTab.addEventListener('click', () => {
+            newMessageTab.classList.add('active');
+            supportMessagesTab.classList.remove('active');
+            teacherMessagesTab.classList.remove('active');
+            newMessageContent.classList.add('active');
+            supportMessagesContent.classList.remove('active');
+            teacherMessagesContent.classList.remove('active');
+        });
+
+        // Admin dashboard tabs
+        purchasesTab.addEventListener('click', () => {
+            purchasesTab.classList.add('active');
+            supportTab.classList.remove('active');
+            teacherTab.classList.remove('active');
+            purchasesContent.classList.add('active');
+            supportContent.classList.remove('active');
+            teacherContent.classList.remove('active');
+        });
+
+        supportTab.addEventListener('click', () => {
+            supportTab.classList.add('active');
+            purchasesTab.classList.remove('active');
+            teacherTab.classList.remove('active');
+            supportContent.classList.add('active');
+            purchasesContent.classList.remove('active');
+            teacherContent.classList.remove('active');
+        });
+
+        teacherTab.addEventListener('click', () => {
+            teacherTab.classList.add('active');
+            purchasesTab.classList.remove('active');
+            supportTab.classList.remove('active');
+            teacherContent.classList.add('active');
+            purchasesContent.classList.remove('active');
+            supportContent.classList.remove('active');
+        });
+
         // CAPTCHA refresh buttons
         document.getElementById('refresh-login-captcha').addEventListener('click', () => {
             loadCaptcha();
@@ -1873,10 +2506,30 @@
             resetModal();
         });
 
+        // Close support reply modal
+        const closeSupportReplyModal = supportReplyModal.querySelector('.close-modal');
+        closeSupportReplyModal.addEventListener('click', () => {
+            supportReplyModal.style.display = 'none';
+            document.getElementById('reply-form-element').reset();
+        });
+
+        // Close teacher message modal
+        const closeTeacherMessageModal = teacherMessageModal.querySelector('.close-modal');
+        closeTeacherMessageModal.addEventListener('click', () => {
+            teacherMessageModal.style.display = 'none';
+        });
+
         window.addEventListener('click', (e) => {
             if (e.target === courseModal) {
                 courseModal.style.display = 'none';
                 resetModal();
+            }
+            if (e.target === supportReplyModal) {
+                supportReplyModal.style.display = 'none';
+                document.getElementById('reply-form-element').reset();
+            }
+            if (e.target === teacherMessageModal) {
+                teacherMessageModal.style.display = 'none';
             }
         });
 
@@ -1895,6 +2548,7 @@
             homeSection.style.display = 'none';
             authSection.style.display = 'none';
             coursesSection.style.display = 'none';
+            supportSection.style.display = 'none';
             adminLoginSection.style.display = 'none';
             adminDashboardSection.style.display = 'none';
 
@@ -1907,6 +2561,9 @@
                     break;
                 case 'courses':
                     coursesSection.style.display = 'block';
+                    break;
+                case 'support':
+                    supportSection.style.display = 'block';
                     break;
                 case 'admin-login':
                     adminLoginSection.style.display = 'block';
@@ -1961,6 +2618,7 @@
                 loginLink.style.display = 'none';
                 registerLink.style.display = 'none';
                 logoutLink.style.display = 'block';
+                supportLink.style.display = 'block';
                 
                 if (currentUser.is_admin) {
                     adminLink.style.display = 'block';
@@ -1969,6 +2627,7 @@
                 loginLink.style.display = 'block';
                 registerLink.style.display = 'block';
                 logoutLink.style.display = 'none';
+                supportLink.style.display = 'none';
                 adminLink.style.display = 'none';
             }
         }
@@ -2148,6 +2807,7 @@
                     updateUI();
                     showNotification(data.message, 'success');
                     showSection('admin-dashboard');
+                    loadAdminDashboard();
                     
                     // Join admin room via Socket.IO
                     if (socket) {
@@ -2513,6 +3173,14 @@
                 if (data.purchases) {
                     loadPurchasesIntoTable(data.purchases);
                 }
+                
+                if (data.support_messages) {
+                    loadSupportMessagesIntoTable(data.support_messages);
+                }
+                
+                if (data.teacher_messages) {
+                    loadTeacherMessagesIntoTable(data.teacher_messages);
+                }
             } catch (error) {
                 showNotification('Error loading admin dashboard', 'error');
                 console.error('Error loading admin dashboard:', error);
@@ -2632,6 +3300,600 @@
                 setTimeout(() => {
                     row.classList.remove('updated-purchase');
                 }, 2000);
+            }
+        }
+
+        // Load support messages into admin table
+        function loadSupportMessagesIntoTable(messages) {
+            const tbody = document.getElementById('admin-support-tbody');
+            tbody.innerHTML = '';
+            
+            messages.forEach(message => {
+                addSupportMessageRow(message);
+            });
+        }
+
+        // Add support message row to admin table
+        function addSupportMessageRow(message) {
+            const tbody = document.getElementById('admin-support-tbody');
+            const row = document.createElement('tr');
+            row.setAttribute('data-message-id', message.id);
+            
+            let statusClass = '';
+            if (message.status === 'pending') {
+                statusClass = 'pending';
+            } else if (message.status === 'replied') {
+                statusClass = 'replied';
+            }
+            
+            let actionButtons = '';
+            if (message.status === 'pending') {
+                actionButtons = `
+                    <div class="action-buttons">
+                        <button class="btn btn-success reply-btn" data-id="${message.id}" data-email="${message.email}" data-type="${message.message_type}" data-subject="${message.subject}" data-message="${message.message}">Reply</button>
+                    </div>
+                `;
+            }
+            
+            row.innerHTML = `
+                <td>${message.id}</td>
+                <td>${message.email}</td>
+                <td><span class="support-message-type ${message.message_type}">${message.message_type}</span></td>
+                <td>${message.subject}</td>
+                <td><span class="status-badge ${statusClass}">${message.status}</span></td>
+                <td>${actionButtons}</td>
+            `;
+            
+            tbody.insertBefore(row, tbody.firstChild);
+            
+            // Add event listener to reply button
+            const replyBtn = row.querySelector('.reply-btn');
+            if (replyBtn) {
+                replyBtn.addEventListener('click', () => {
+                    openReplyModal(
+                        replyBtn.getAttribute('data-id'),
+                        replyBtn.getAttribute('data-email'),
+                        replyBtn.getAttribute('data-type'),
+                        replyBtn.getAttribute('data-subject'),
+                        replyBtn.getAttribute('data-message')
+                    );
+                });
+            }
+        }
+
+        // Add new support message with animation
+        function addNewSupportMessageToTable(message) {
+            const tbody = document.getElementById('admin-support-tbody');
+            const row = document.createElement('tr');
+            row.setAttribute('data-message-id', message.id);
+            row.className = 'new-purchase';
+            
+            row.innerHTML = `
+                <td>${message.id}</td>
+                <td>${message.user_email}</td>
+                <td><span class="support-message-type ${message.message_type}">${message.message_type}</span></td>
+                <td>${message.subject}</td>
+                <td><span class="status-badge pending">${message.status}</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn btn-success reply-btn" data-id="${message.id}" data-email="${message.user_email}" data-type="${message.message_type}" data-subject="${message.subject}" data-message="${message.message}">Reply</button>
+                    </div>
+                </td>
+            `;
+            
+            tbody.insertBefore(row, tbody.firstChild);
+            
+            // Add event listener
+            row.querySelector('.reply-btn').addEventListener('click', () => {
+                openReplyModal(
+                    message.id,
+                    message.user_email,
+                    message.message_type,
+                    message.subject,
+                    message.message
+                );
+            });
+        }
+
+        // Update support message in table
+        function updateSupportMessageInTable(message, action) {
+            const row = document.querySelector(`[data-message-id="${message.id}"]`);
+            if (row) {
+                const statusCell = row.querySelector('.status-badge');
+                const actionCell = row.querySelector('td:last-child');
+                
+                statusCell.className = `status-badge ${message.status}`;
+                statusCell.textContent = message.status;
+                
+                if (message.status !== 'pending') {
+                    actionCell.innerHTML = '';
+                }
+                
+                // Add highlight animation
+                row.classList.add('updated-purchase');
+                setTimeout(() => {
+                    row.classList.remove('updated-purchase');
+                }, 2000);
+            }
+        }
+
+        // Load teacher messages into admin table
+        function loadTeacherMessagesIntoTable(messages) {
+            const tbody = document.getElementById('admin-teacher-tbody');
+            tbody.innerHTML = '';
+            
+            messages.forEach(message => {
+                addTeacherMessageRow(message);
+            });
+        }
+
+        // Add teacher message row to admin table
+        function addTeacherMessageRow(message) {
+            const tbody = document.getElementById('admin-teacher-tbody');
+            const row = document.createElement('tr');
+            row.setAttribute('data-message-id', message.id);
+            
+            let statusClass = '';
+            if (message.status === 'pending') {
+                statusClass = 'pending';
+            } else if (message.status === 'replied') {
+                statusClass = 'replied';
+            }
+            
+            let actionButtons = '';
+            if (message.status === 'pending') {
+                actionButtons = `
+                    <div class="action-buttons">
+                        <button class="btn btn-success view-teacher-btn" data-id="${message.id}" data-email="${message.email}" data-subject="${message.subject}" data-message="${message.message}" data-file="${message.file_path}">View</button>
+                        <button class="btn btn-success reply-teacher-btn" data-id="${message.id}" data-email="${message.email}" data-subject="${message.subject}" data-message="${message.message}">Reply</button>
+                    </div>
+                `;
+            }
+            
+            const fileHtml = message.file_path ? 
+                `<a href="/download/${message.file_path}" class="btn btn-outline" download><i class="fas fa-download"></i> Download</a>` : 
+                'No file';
+            
+            row.innerHTML = `
+                <td>${message.id}</td>
+                <td>${message.email}</td>
+                <td>${message.subject}</td>
+                <td>${fileHtml}</td>
+                <td><span class="status-badge ${statusClass}">${message.status}</span></td>
+                <td>${actionButtons}</td>
+            `;
+            
+            tbody.insertBefore(row, tbody.firstChild);
+            
+            // Add event listener to view button
+            const viewBtn = row.querySelector('.view-teacher-btn');
+            if (viewBtn) {
+                viewBtn.addEventListener('click', () => {
+                    openTeacherMessageModal(
+                        viewBtn.getAttribute('data-id'),
+                        viewBtn.getAttribute('data-email'),
+                        viewBtn.getAttribute('data-subject'),
+                        viewBtn.getAttribute('data-message'),
+                        viewBtn.getAttribute('data-file')
+                    );
+                });
+            }
+            
+            // Add event listener to reply button
+            const replyBtn = row.querySelector('.reply-teacher-btn');
+            if (replyBtn) {
+                replyBtn.addEventListener('click', () => {
+                    openTeacherReplyModal(
+                        replyBtn.getAttribute('data-id'),
+                        replyBtn.getAttribute('data-email'),
+                        replyBtn.getAttribute('data-subject'),
+                        replyBtn.getAttribute('data-message')
+                    );
+                });
+            }
+        }
+
+        // Add new teacher message with animation
+        function addNewTeacherMessageToTable(message) {
+            const tbody = document.getElementById('admin-teacher-tbody');
+            const row = document.createElement('tr');
+            row.setAttribute('data-message-id', message.id);
+            row.className = 'new-purchase';
+            
+            const fileHtml = message.file_path ? 
+                `<a href="/download/${message.file_path}" class="btn btn-outline" download><i class="fas fa-download"></i> Download</a>` : 
+                'No file';
+            
+            row.innerHTML = `
+                <td>${message.id}</td>
+                <td>${message.user_email}</td>
+                <td>${message.subject}</td>
+                <td>${fileHtml}</td>
+                <td><span class="status-badge pending">${message.status}</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn btn-success view-teacher-btn" data-id="${message.id}" data-email="${message.user_email}" data-subject="${message.subject}" data-message="${message.message}" data-file="${message.file_path}">View</button>
+                        <button class="btn btn-success reply-teacher-btn" data-id="${message.id}" data-email="${message.user_email}" data-subject="${message.subject}" data-message="${message.message}">Reply</button>
+                    </div>
+                </td>
+            `;
+            
+            tbody.insertBefore(row, tbody.firstChild);
+            
+            // Add event listener
+            row.querySelector('.view-teacher-btn').addEventListener('click', () => {
+                openTeacherMessageModal(
+                    message.id,
+                    message.user_email,
+                    message.subject,
+                    message.message,
+                    message.file_path
+                );
+            });
+            
+            row.querySelector('.reply-teacher-btn').addEventListener('click', () => {
+                openTeacherReplyModal(
+                    message.id,
+                    message.user_email,
+                    message.subject,
+                    message.message
+                );
+            });
+        }
+
+        // Update teacher message in table
+        function updateTeacherMessageInTable(message, action) {
+            const row = document.querySelector(`[data-message-id="${message.id}"]`);
+            if (row) {
+                const statusCell = row.querySelector('.status-badge');
+                const actionCell = row.querySelector('td:last-child');
+                
+                statusCell.className = `status-badge ${message.status}`;
+                statusCell.textContent = message.status;
+                
+                if (message.status !== 'pending') {
+                    // Keep the view button but remove reply button
+                    const viewBtn = actionCell.querySelector('.view-teacher-btn');
+                    actionCell.innerHTML = '';
+                    if (viewBtn) {
+                        actionCell.appendChild(viewBtn);
+                    }
+                }
+                
+                // Add highlight animation
+                row.classList.add('updated-purchase');
+                setTimeout(() => {
+                    row.classList.remove('updated-purchase');
+                }, 2000);
+            }
+        }
+
+        // Open reply modal
+        function openReplyModal(messageId, email, type, subject, message) {
+            document.getElementById('reply-message-id').value = messageId;
+            document.getElementById('reply-message-email').textContent = email;
+            document.getElementById('reply-message-type').textContent = type;
+            document.getElementById('reply-message-type').className = `support-message-type ${type}`;
+            document.getElementById('reply-message-subject').textContent = subject;
+            document.getElementById('reply-message-content').textContent = message;
+            document.getElementById('reply-message-type-field').value = 'support';
+            document.getElementById('reply-message').focus();
+            
+            supportReplyModal.style.display = 'flex';
+        }
+
+        // Open teacher reply modal
+        function openTeacherReplyModal(messageId, email, subject, message) {
+            document.getElementById('reply-message-id').value = messageId;
+            document.getElementById('reply-message-email').textContent = email;
+            document.getElementById('reply-message-type').textContent = 'teacher';
+            document.getElementById('reply-message-type').className = `support-message-type teacher`;
+            document.getElementById('reply-message-subject').textContent = subject;
+            document.getElementById('reply-message-content').textContent = message;
+            document.getElementById('reply-message-type-field').value = 'teacher';
+            document.getElementById('reply-message').focus();
+            
+            supportReplyModal.style.display = 'flex';
+        }
+
+        // Open teacher message view modal
+        function openTeacherMessageModal(messageId, email, subject, message, filePath) {
+            document.getElementById('teacher-view-subject').textContent = subject;
+            document.getElementById('teacher-view-message').textContent = message;
+            document.getElementById('teacher-view-email').textContent = `From: ${email}`;
+            
+            // Add file attachment if exists
+            const fileContainer = document.getElementById('teacher-view-file-container');
+            if (filePath) {
+                const fileName = filePath.split('/').pop();
+                fileContainer.innerHTML = `
+                    <a href="/download/${filePath}" class="file-attachment" download>
+                        <i class="fas fa-paperclip"></i> ${fileName}
+                    </a>
+                `;
+            } else {
+                fileContainer.innerHTML = '';
+            }
+            
+            // Check if there's a reply
+            // This would need to be fetched from the server or stored in the message data
+            // For now, we'll check if the message status is 'replied'
+            const messageRow = document.querySelector(`[data-message-id="${messageId}"]`);
+            if (messageRow) {
+                const statusBadge = messageRow.querySelector('.status-badge');
+                if (statusBadge && statusBadge.textContent === 'replied') {
+                    // Show reply section (you might need to fetch the actual reply)
+                    document.getElementById('teacher-reply-section').style.display = 'block';
+                    document.getElementById('teacher-view-reply').textContent = 'Reply has been sent. Please check your messages.';
+                } else {
+                    document.getElementById('teacher-reply-section').style.display = 'none';
+                }
+            }
+            
+            teacherMessageModal.style.display = 'flex';
+        }
+
+        // Load user messages
+        async function loadUserMessages() {
+            try {
+                const response = await fetch('/user/messages');
+                const data = await response.json();
+                
+                if (data.support_messages) {
+                    displaySupportMessages(data.support_messages);
+                }
+                
+                if (data.teacher_messages) {
+                    displayTeacherMessages(data.teacher_messages);
+                }
+            } catch (error) {
+                console.error('Error loading user messages:', error);
+            }
+        }
+
+        // Display support messages
+        function displaySupportMessages(messages) {
+            const container = document.getElementById('support-messages-list');
+            container.innerHTML = '';
+            
+            if (messages.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--dark-gray);">No support messages yet.</p>';
+                return;
+            }
+            
+            messages.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message-item';
+                messageDiv.setAttribute('data-message-id', msg.id);
+                
+                const sentClass = msg.reply ? 'received' : 'sent';
+                messageDiv.classList.add(sentClass);
+                
+                messageDiv.innerHTML = `
+                    <div class="message-header">You</div>
+                    <div class="message-content">${msg.message}</div>
+                    <div class="message-time">${new Date(msg.created_at).toLocaleString()}</div>
+                `;
+                
+                container.appendChild(messageDiv);
+                
+                if (msg.reply) {
+                    const replyDiv = document.createElement('div');
+                    replyDiv.className = 'message-item received';
+                    
+                    replyDiv.innerHTML = `
+                        <div class="message-header">Admin</div>
+                        <div class="message-content">${msg.reply}</div>
+                        <div class="message-time">${new Date(msg.reply_date).toLocaleString()}</div>
+                    `;
+                    
+                    container.appendChild(replyDiv);
+                }
+            });
+        }
+
+        // Display teacher messages
+        function displayTeacherMessages(messages) {
+            const container = document.getElementById('teacher-messages-list');
+            container.innerHTML = '';
+            
+            if (messages.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--dark-gray);">No teacher messages yet.</p>';
+                return;
+            }
+            
+            messages.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message-item';
+                messageDiv.setAttribute('data-message-id', msg.id);
+                
+                const sentClass = msg.reply ? 'received' : 'sent';
+                messageDiv.classList.add(sentClass);
+                
+                let fileHtml = '';
+                if (msg.file_path) {
+                    const fileName = msg.file_path.split('/').pop();
+                    fileHtml = `<a href="/download/${msg.file_path}" class="file-attachment" download><i class="fas fa-paperclip"></i> ${fileName}</a>`;
+                }
+                
+                messageDiv.innerHTML = `
+                    <div class="message-header">You</div>
+                    <div class="message-content">${msg.message}</div>
+                    ${fileHtml}
+                    <div class="message-time">${new Date(msg.created_at).toLocaleString()}</div>
+                `;
+                
+                container.appendChild(messageDiv);
+                
+                if (msg.reply) {
+                    const replyDiv = document.createElement('div');
+                    replyDiv.className = 'message-item received';
+                    
+                    replyDiv.innerHTML = `
+                        <div class="message-header">Teacher</div>
+                        <div class="message-content">${msg.reply}</div>
+                        <div class="message-time">${new Date(msg.reply_date).toLocaleString()}</div>
+                    `;
+                    
+                    container.appendChild(replyDiv);
+                }
+            });
+        }
+
+        // Update support message in UI
+        function updateSupportMessageInUI(messageId, reply) {
+            const messageDiv = document.querySelector(`.message-item[data-message-id="${messageId}"]`);
+            if (messageDiv) {
+                // Create reply div
+                const replyDiv = document.createElement('div');
+                replyDiv.className = 'message-item received';
+                
+                replyDiv.innerHTML = `
+                    <div class="message-header">Admin</div>
+                    <div class="message-content">${reply}</div>
+                    <div class="message-time">${new Date().toLocaleString()}</div>
+                `;
+                
+                // Insert after the original message
+                messageDiv.parentNode.insertBefore(replyDiv, messageDiv.nextSibling);
+                
+                // Scroll to the new reply
+                replyDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        // Update teacher message in UI
+        function updateTeacherMessageInUI(messageId, reply) {
+            const messageDiv = document.querySelector(`.message-item[data-message-id="${messageId}"]`);
+            if (messageDiv) {
+                // Create reply div
+                const replyDiv = document.createElement('div');
+                replyDiv.className = 'message-item received';
+                
+                replyDiv.innerHTML = `
+                    <div class="message-header">Teacher</div>
+                    <div class="message-content">${reply}</div>
+                    <div class="message-time">${new Date().toLocaleString()}</div>
+                `;
+                
+                // Insert after the original message
+                messageDiv.parentNode.insertBefore(replyDiv, messageDiv.nextSibling);
+                
+                // Scroll to the new reply
+                replyDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        // Submit support message
+        async function submitSupportMessage() {
+            if (isProcessing) return;
+            isProcessing = true;
+            
+            const message_type = document.getElementById('support-type').value;
+            const subject = document.getElementById('support-subject').value;
+            const message = document.getElementById('support-message').value;
+            const submitBtn = document.querySelector('#support-form-element button[type="submit"]');
+            
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="loading"></span> Sending...';
+                
+                const formData = new FormData();
+                formData.append('message_type', message_type);
+                formData.append('subject', subject);
+                formData.append('message', message);
+                
+                // Add file if it's a teacher message
+                if (message_type === 'teacher') {
+                    const fileInput = document.getElementById('support-file');
+                    if (fileInput.files[0]) {
+                        formData.append('file', fileInput.files[0]);
+                    }
+                }
+
+                let response;
+                if (message_type === 'teacher') {
+                    response = await fetch('/teacher/submit', {
+                        method: 'POST',
+                        body: formData
+                    });
+                } else {
+                    response = await fetch('/support/submit', {
+                        method: 'POST',
+                        body: formData
+                    });
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    
+                    // Reset form
+                    document.getElementById('support-form-element').reset();
+                    supportFormContainer.classList.remove('active');
+                    
+                    // Reload messages
+                    loadUserMessages();
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            } catch (error) {
+                showNotification('An error occurred. Please try again.', 'error');
+                console.error('Submit support message error:', error);
+            } finally {
+                isProcessing = false;
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send Message';
+            }
+        }
+
+        // Submit reply
+        async function submitReply() {
+            if (isProcessing) return;
+            isProcessing = true;
+            
+            const messageId = document.getElementById('reply-message-id').value;
+            const reply = document.getElementById('reply-message').value;
+            const messageType = document.getElementById('reply-message-type-field').value;
+            const submitBtn = document.querySelector('#reply-form-element button[type="submit"]');
+            
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="loading"></span> Sending...';
+                
+                const formData = new FormData();
+                formData.append('reply', reply);
+
+                let response;
+                if (messageType === 'teacher') {
+                    response = await fetch(`/admin/teacher/reply/${messageId}`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                } else {
+                    response = await fetch(`/admin/support/reply/${messageId}`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    supportReplyModal.style.display = 'none';
+                    document.getElementById('reply-form-element').reset();
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            } catch (error) {
+                showNotification('An error occurred. Please try again.', 'error');
+                console.error('Submit reply error:', error);
+            } finally {
+                isProcessing = false;
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send Reply';
             }
         }
 
@@ -2787,6 +4049,14 @@
                     loadAdminDashboard();
                 } else {
                     showSection('admin-login');
+                }
+            } else if (path === '/support') {
+                if (currentUser) {
+                    showSection('support');
+                    loadUserMessages();
+                } else {
+                    showSection('auth');
+                    showLoginForm();
                 }
             } else {
                 showSection('home');
