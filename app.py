@@ -23,6 +23,8 @@ socketio = SocketIO(app, cors_allowed_origins="*", logger=True, engineio_logger=
 # Create static folders if they don't exist
 os.makedirs('static/images', exist_ok=True)
 os.makedirs('uploads', exist_ok=True)
+os.makedirs('uploads/support', exist_ok=True)
+os.makedirs('uploads/teacher', exist_ok=True)
 
 # Database initialization
 def init_db():
@@ -62,6 +64,56 @@ def init_db():
     )
     ''')
     
+    # Create support_messages table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS support_messages (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        message_type TEXT NOT NULL,
+        subject TEXT NOT NULL,
+        message TEXT NOT NULL,
+        status TEXT DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (id)
+    )
+    ''')
+    
+    # Create teacher_messages table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS teacher_messages (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        subject TEXT NOT NULL,
+        message TEXT NOT NULL,
+        file_path TEXT,
+        status TEXT DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (id)
+    )
+    ''')
+    
+    # Create support_replies table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS support_replies (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        message_id INTEGER NOT NULL,
+        reply TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (message_id) REFERENCES support_messages (id)
+    )
+    ''')
+    
+    # Create teacher_replies table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS teacher_replies (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        message_id INTEGER NOT NULL,
+        reply TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (message_id) REFERENCES teacher_messages (id)
+    )
+    ''')
+    
     # Check if admin user exists, if not create one
     cursor.execute('SELECT * FROM users WHERE email = "admin@example.com"')
     if not cursor.fetchone():
@@ -79,7 +131,7 @@ def init_db():
             ('N4', 'Elementary Level - Basic Japanese', 
             'N4 Course Content: More grammar structures, vocabulary building, reading comprehension. Students learn to understand basic Japanese and read simple sentences.\n\nသင်ခန်းစာများ အားဝယ်ယူရာတွင်လွယ်ကူစေရန် KBZ payဖြင့်ငွေချေနိုင်ပါတယ် ငွေချေရန် scan ဖတ်ပါ note တွင်ဝယ်ယူသည့် သင်ခန်းစာနံပါတ်ကိုထည့်သွင်းရေးသားပေးပါ။ ဥပမာ: N5, N3။ ငွေလွှဲပြီးတစ်နာရီအတွင်း approve လုပ်ပေးပါမယ်။ ကျေးဇူးတင်ပါတယ်။'),
             ('N3', 'Intermediate Level - Japanese', 
-            'N3 Course Content: Complex grammar, kanji, reading passages, listening exercises. This level bridges the gap between basic and advanced Japanese.\n\nသင်ခန်းစာများ အားဝယ်ယူရာတွင်လွယ်ကူစေရန် KBZ payဖြင့်ငွေချေနိုင်ပါတယ် ငွေချေရန် scan ဖတ်ပါ note တွင်ဝယ်ယူသည့် သင်ခန်း‌စာနံပါတ်ကိုထည့်သွင်းရေးသားပေးပါ။ ဥပမာ: N5, N3။ ငွေလွှဲပြီးတစ်နာရီအတွင်း approve လုပ်ပေးပါမယ်။ ကျေးဇူးတင်ပါတယ်။'),
+            'N3 Course Content: Complex grammar, kanji, reading passages, listening exercises. This level bridges the gap between basic and advanced Japanese.\n\nသင်ခန်းစာများ အားဝယ်ယူရာတွင်လွယ်ကူစေရန် KBZ payဖြင့်ငွေချေနိုင်ပါတယ် ငွေချေရန် scan ဖတ်ပါ note တွင်ဝယ်ယူသည့် သင်ခန်းစာနံပါတ်ကိုထည့်သွင်းရေးသားပေးပါ။ ဥပမာ: N5, N3။ ငွေလွှဲပြီးတစ်နာရီအတွင်း approve လုပ်ပေးပါမယ်။ ကျေးဇူးတင်ပါတယ်။'),
             ('N2', 'Upper Intermediate Level - Japanese', 
             'N2 Course Content: Advanced grammar, extensive vocabulary, complex reading materials. Students can understand Japanese used in everyday situations and in a variety of circumstances.\n\nသင်ခန်းစာများ အားဝယ်ယူရာတွင်လွယ်ကူစေရန် KBZ payဖြင့်ငွေချေနိုင်ပါတယ် ငွေချေရန် scan ဖတ်ပါ note တွင်ဝယ်ယူသည့် သင်ခန်းစာနံပါတ်ကိုထည့်သွင်းရေးသားပေးပါ။ ဥပမာ: N5, N3။ ငွေလွှဲပြီးတစ်နာရီအတွင်း approve လုပ်ပေးပါမယ်။ ကျေးဇူးတင်ပါတယ်။'),
             ('N1', 'Advanced Level - Japanese', 
@@ -89,6 +141,7 @@ def init_db():
             
     conn.commit()
     conn.close()
+
 # Initialize database on app start
 init_db()
 
@@ -153,11 +206,32 @@ def handle_connect():
                 ORDER BY p.id DESC
                 ''')
                 purchases = [dict(row) for row in cursor.fetchall()]
+                
+                # Send support messages to admin
+                cursor.execute('''
+                SELECT sm.id, u.email, sm.message_type, sm.subject, sm.message, sm.status
+                FROM support_messages sm
+                JOIN users u ON sm.user_id = u.id
+                ORDER BY sm.id DESC
+                ''')
+                support_messages = [dict(row) for row in cursor.fetchall()]
+                
+                # Send teacher messages to admin
+                cursor.execute('''
+                SELECT tm.id, u.email, tm.subject, tm.message, tm.file_path, tm.status
+                FROM teacher_messages tm
+                JOIN users u ON tm.user_id = u.id
+                ORDER BY tm.id DESC
+                ''')
+                teacher_messages = [dict(row) for row in cursor.fetchall()]
+                
                 conn.close()
                 
                 emit('initial_purchases', {'purchases': purchases})
+                emit('initial_support_messages', {'messages': support_messages})
+                emit('initial_teacher_messages', {'messages': teacher_messages})
             except Exception as e:
-                logger.error(f"Error sending initial purchases: {e}")
+                logger.error(f"Error sending initial data: {e}")
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -465,14 +539,38 @@ def admin_dashboard():
         ''')
         purchases = cursor.fetchall()
         
+        # Get all support messages with user info
+        cursor.execute('''
+        SELECT sm.id, u.email, sm.message_type, sm.subject, sm.message, sm.status
+        FROM support_messages sm
+        JOIN users u ON sm.user_id = u.id
+        ORDER BY sm.id DESC
+        ''')
+        support_messages = cursor.fetchall()
+        
+        # Get all teacher messages with user info
+        cursor.execute('''
+        SELECT tm.id, u.email, tm.subject, tm.message, tm.file_path, tm.status
+        FROM teacher_messages tm
+        JOIN users u ON tm.user_id = u.id
+        ORDER BY tm.id DESC
+        ''')
+        teacher_messages = cursor.fetchall()
+        
         conn.close()
         
-        return render_template('main.html', admin_dashboard=True, purchases=purchases)
+        return render_template('main.html', admin_dashboard=True, 
+                             purchases=purchases, 
+                             support_messages=support_messages,
+                             teacher_messages=teacher_messages)
         
     except Exception as e:
         logger.error(f"Admin dashboard error: {e}")
         conn.close()
-        return render_template('main.html', admin_dashboard=True, purchases=[])
+        return render_template('main.html', admin_dashboard=True, 
+                             purchases=[], 
+                             support_messages=[],
+                             teacher_messages=[])
 
 @app.route('/admin/dashboard/data')
 @admin_required
@@ -491,14 +589,40 @@ def admin_dashboard_data():
         ''')
         purchases = [dict(row) for row in cursor.fetchall()]
         
+        # Get all support messages with user info
+        cursor.execute('''
+        SELECT sm.id, u.email, sm.message_type, sm.subject, sm.message, sm.status, sm.user_id
+        FROM support_messages sm
+        JOIN users u ON sm.user_id = u.id
+        ORDER BY sm.id DESC
+        ''')
+        support_messages = [dict(row) for row in cursor.fetchall()]
+        
+        # Get all teacher messages with user info
+        cursor.execute('''
+        SELECT tm.id, u.email, tm.subject, tm.message, tm.file_path, tm.status, tm.user_id
+        FROM teacher_messages tm
+        JOIN users u ON tm.user_id = u.id
+        ORDER BY tm.id DESC
+        ''')
+        teacher_messages = [dict(row) for row in cursor.fetchall()]
+        
         conn.close()
         
-        return jsonify({'purchases': purchases})
+        return jsonify({
+            'purchases': purchases, 
+            'support_messages': support_messages,
+            'teacher_messages': teacher_messages
+        })
         
     except Exception as e:
         logger.error(f"Admin dashboard data error: {e}")
         conn.close()
-        return jsonify({'purchases': []})
+        return jsonify({
+            'purchases': [], 
+            'support_messages': [],
+            'teacher_messages': []
+        })
 
 @app.route('/admin/approve/<int:purchase_id>', methods=['POST'])
 @admin_required
@@ -617,6 +741,344 @@ def reject_purchase(purchase_id):
         logger.error(f"Reject purchase error: {e}")
         conn.close()
         return jsonify({'success': False, 'message': 'Failed to reject purchase'})
+
+@app.route('/support')
+@login_required
+def support():
+    return render_template('main.html', support=True)
+
+@app.route('/support/submit', methods=['POST'])
+@login_required
+def submit_support():
+    message_type = request.form.get('message_type')
+    subject = request.form.get('subject')
+    message = request.form.get('message')
+    
+    if not message_type or not subject or not message:
+        return jsonify({'success': False, 'message': 'All fields are required'})
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    try:
+        # Insert the support message
+        cursor.execute('''
+        INSERT INTO support_messages (user_id, message_type, subject, message)
+        VALUES (?, ?, ?, ?)
+        ''', (session['user_id'], message_type, subject, message))
+        conn.commit()
+        
+        # Get the message ID
+        message_id = cursor.lastrowid
+        
+        # Get user email for notification
+        cursor.execute('SELECT email FROM users WHERE id = ?', (session['user_id'],))
+        user_email = cursor.fetchone()[0]
+        
+        conn.close()
+        
+        # Prepare message data for notification
+        message_data = {
+            'id': message_id,
+            'user_email': user_email,
+            'message_type': message_type,
+            'subject': subject,
+            'message': message,
+            'status': 'pending',
+            'user_id': session['user_id']
+        }
+        
+        # Emit real-time notification to admin room
+        socketio.emit('new_support_message', message_data, room='admin')
+        logger.info(f"New support message emitted: {message_data}")
+        
+        return jsonify({
+            'success': True, 
+            'message': 'Your message has been sent. We will get back to you soon.',
+            'message_id': message_id
+        })
+        
+    except Exception as e:
+        logger.error(f"Submit support message error: {e}")
+        conn.close()
+        return jsonify({'success': False, 'message': 'Failed to send message'})
+
+@app.route('/teacher/submit', methods=['POST'])
+@login_required
+def submit_teacher_message():
+    subject = request.form.get('subject')
+    message = request.form.get('message')
+    
+    if not subject or not message:
+        return jsonify({'success': False, 'message': 'Subject and message are required'})
+    
+    file_path = None
+    if 'file' in request.files:
+        file = request.files['file']
+        if file and file.filename:
+            # Check file extension
+            allowed_extensions = {'docx', 'pdf', 'txt', 'jpeg', 'jpg', 'png'}
+            if '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in allowed_extensions:
+                # Generate unique filename
+                import uuid
+                filename = str(uuid.uuid4()) + '_' + file.filename
+                file_path = os.path.join('uploads/teacher', filename)
+                file.save(file_path)
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    try:
+        # Insert the teacher message
+        cursor.execute('''
+        INSERT INTO teacher_messages (user_id, subject, message, file_path)
+        VALUES (?, ?, ?, ?)
+        ''', (session['user_id'], subject, message, file_path))
+        conn.commit()
+        
+        # Get the message ID
+        message_id = cursor.lastrowid
+        
+        # Get user email for notification
+        cursor.execute('SELECT email FROM users WHERE id = ?', (session['user_id'],))
+        user_email = cursor.fetchone()[0]
+        
+        conn.close()
+        
+        # Prepare message data for notification
+        message_data = {
+            'id': message_id,
+            'user_email': user_email,
+            'subject': subject,
+            'message': message,
+            'file_path': file_path,
+            'status': 'pending',
+            'user_id': session['user_id']
+        }
+        
+        # Emit real-time notification to admin room
+        socketio.emit('new_teacher_message', message_data, room='admin')
+        logger.info(f"New teacher message emitted: {message_data}")
+        
+        return jsonify({
+            'success': True, 
+            'message': 'Your message has been sent to the teacher.',
+            'message_id': message_id
+        })
+        
+    except Exception as e:
+        logger.error(f"Submit teacher message error: {e}")
+        conn.close()
+        return jsonify({'success': False, 'message': 'Failed to send message'})
+
+@app.route('/admin/support/reply/<int:message_id>', methods=['POST'])
+@admin_required
+def reply_support_message(message_id):
+    reply = request.form.get('reply')
+    
+    if not reply:
+        return jsonify({'success': False, 'message': 'Reply message is required'})
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    try:
+        # Get message details before updating
+        cursor.execute('''
+        SELECT sm.user_id, sm.subject, u.email
+        FROM support_messages sm
+        JOIN users u ON sm.user_id = u.id
+        WHERE sm.id = ?
+        ''', (message_id,))
+        message_data = cursor.fetchone()
+        
+        if not message_data:
+            conn.close()
+            return jsonify({'success': False, 'message': 'Message not found'})
+        
+        # Insert reply
+        cursor.execute('''
+        INSERT INTO support_replies (message_id, reply)
+        VALUES (?, ?)
+        ''', (message_id, reply))
+        
+        # Update message status
+        cursor.execute('UPDATE support_messages SET status = "replied" WHERE id = ?', (message_id,))
+        conn.commit()
+        
+        # Get updated message data
+        cursor.execute('''
+        SELECT sm.id, u.email, sm.message_type, sm.subject, sm.message, sm.status, sm.user_id
+        FROM support_messages sm
+        JOIN users u ON sm.user_id = u.id
+        WHERE sm.id = ?
+        ''', (message_id,))
+        updated_message = dict(cursor.fetchone())
+        
+        conn.close()
+        
+        # Emit real-time notification to admin room
+        socketio.emit('support_message_updated', {
+            'message': updated_message,
+            'action': 'replied'
+        }, room='admin')
+        
+        # Emit real-time notification to specific user
+        socketio.emit('support_reply_received', {
+            'message_id': message_id,
+            'subject': message_data['subject'],
+            'reply': reply,
+            'message': f'Admin has replied to your message: "{message_data["subject"]}"'
+        }, room=f"user_{message_data['user_id']}")
+        
+        logger.info(f"Support message {message_id} replied for user {message_data['user_id']}")
+        
+        return jsonify({'success': True, 'message': 'Reply sent successfully'})
+        
+    except Exception as e:
+        logger.error(f"Reply support message error: {e}")
+        conn.close()
+        return jsonify({'success': False, 'message': 'Failed to send reply'})
+
+@app.route('/admin/teacher/reply/<int:message_id>', methods=['POST'])
+@admin_required
+def reply_teacher_message(message_id):
+    reply = request.form.get('reply')
+    
+    if not reply:
+        return jsonify({'success': False, 'message': 'Reply message is required'})
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    try:
+        # Get message details before updating
+        cursor.execute('''
+        SELECT tm.user_id, tm.subject, u.email
+        FROM teacher_messages tm
+        JOIN users u ON tm.user_id = u.id
+        WHERE tm.id = ?
+        ''', (message_id,))
+        message_data = cursor.fetchone()
+        
+        if not message_data:
+            conn.close()
+            return jsonify({'success': False, 'message': 'Message not found'})
+        
+        # Insert reply
+        cursor.execute('''
+        INSERT INTO teacher_replies (message_id, reply)
+        VALUES (?, ?)
+        ''', (message_id, reply))
+        
+        # Update message status
+        cursor.execute('UPDATE teacher_messages SET status = "replied" WHERE id = ?', (message_id,))
+        conn.commit()
+        
+        # Get updated message data
+        cursor.execute('''
+        SELECT tm.id, u.email, tm.subject, tm.message, tm.file_path, tm.status, tm.user_id
+        FROM teacher_messages tm
+        JOIN users u ON tm.user_id = u.id
+        WHERE tm.id = ?
+        ''', (message_id,))
+        updated_message = dict(cursor.fetchone())
+        
+        conn.close()
+        
+        # Emit real-time notification to admin room
+        socketio.emit('teacher_message_updated', {
+            'message': updated_message,
+            'action': 'replied'
+        }, room='admin')
+        
+        # Emit real-time notification to specific user
+        socketio.emit('teacher_reply_received', {
+            'message_id': message_id,
+            'subject': message_data['subject'],
+            'reply': reply,
+            'message': f'Teacher has replied to your message: "{message_data["subject"]}"'
+        }, room=f"user_{message_data['user_id']}")
+        
+        logger.info(f"Teacher message {message_id} replied for user {message_data['user_id']}")
+        
+        return jsonify({'success': True, 'message': 'Reply sent successfully'})
+        
+    except Exception as e:
+        logger.error(f"Reply teacher message error: {e}")
+        conn.close()
+        return jsonify({'success': False, 'message': 'Failed to send reply'})
+
+@app.route('/download/<path:filename>')
+@login_required
+def download_file(filename):
+    try:
+        return send_from_directory('uploads', filename, as_attachment=True)
+    except Exception as e:
+        logger.error(f"Download error: {e}")
+        return jsonify({'success': False, 'message': 'File not found'}), 404
+
+@app.route('/user/messages')
+@login_required
+def get_user_messages():
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    try:
+        # Get support messages with replies
+        cursor.execute('''
+        SELECT sm.id, sm.subject, sm.message, sm.status, sm.created_at,
+               sr.reply, sr.created_at as reply_date
+        FROM support_messages sm
+        LEFT JOIN support_replies sr ON sm.id = sr.message_id
+        WHERE sm.user_id = ?
+        ORDER BY sm.id DESC
+        ''', (session['user_id'],))
+        support_messages = []
+        for row in cursor.fetchall():
+            support_messages.append({
+                'id': row['id'],
+                'subject': row['subject'],
+                'message': row['message'],
+                'status': row['status'],
+                'created_at': row['created_at'],
+                'reply': row['reply'],
+                'reply_date': row['reply_date']
+            })
+        
+        # Get teacher messages with replies
+        cursor.execute('''
+        SELECT tm.id, tm.subject, tm.message, tm.file_path, tm.status, tm.created_at,
+               tr.reply, tr.created_at as reply_date
+        FROM teacher_messages tm
+        LEFT JOIN teacher_replies tr ON tm.id = tr.message_id
+        WHERE tm.user_id = ?
+        ORDER BY tm.id DESC
+        ''', (session['user_id'],))
+        teacher_messages = []
+        for row in cursor.fetchall():
+            teacher_messages.append({
+                'id': row['id'],
+                'subject': row['subject'],
+                'message': row['message'],
+                'file_path': row['file_path'],
+                'status': row['status'],
+                'created_at': row['created_at'],
+                'reply': row['reply'],
+                'reply_date': row['reply_date']
+            })
+        
+        conn.close()
+        
+        return jsonify({
+            'support_messages': support_messages,
+            'teacher_messages': teacher_messages
+        })
+        
+    except Exception as e:
+        logger.error(f"Get user messages error: {e}")
+        conn.close()
+        return jsonify({'support_messages': [], 'teacher_messages': []})
 
 @app.route('/user/status')
 def user_status():
