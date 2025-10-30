@@ -126,16 +126,16 @@ def init_db():
     cursor.execute('SELECT * FROM courses')
     if not cursor.fetchone():
         courses_data = [
-            ('N5', 'Beginner Level - Basic Japanese', 
-            'N5 Course Content: Hiragana, Katakana, basic grammar, simple conversations. This level focuses on understanding basic Japanese phrases and expressions used in daily life.\n\nသင်ခန်းစာများ အားဝယ်ယူရာတွင်လွယ်ကူစေရန် KBZ payဖြင့်ငွေချေနိုင်ပါတယ် ငွေချေရန် scan ဖတ်ပါ note တွင်ဝယ်ယူသည့် သင်ခန်းစာနံပါတ်ကိုထည့်သွင်းရေးသားပေးပါ။ ဥပမာ: N5, N3။ ငွေလွှဲပြီးတစ်နာရီအတွင်း approve လုပ်ပေးပါမယ်။ ကျေးဇူးတင်ပါတယ်။'),
-            ('N4', 'Elementary Level - Basic Japanese', 
-            'N4 Course Content: More grammar structures, vocabulary building, reading comprehension. Students learn to understand basic Japanese and read simple sentences.\n\nသင်ခန်းစာများ အားဝယ်ယူရာတွင်လွယ်ကူစေရန် KBZ payဖြင့်ငွေချေနိုင်ပါတယ် ငွေချေရန် scan ဖတ်ပါ note တွင်ဝယ်ယူသည့် သင်ခန်းစာနံပါတ်ကိုထည့်သွင်းရေးသားပေးပါ။ ဥပမာ: N5, N3။ ငွေလွှဲပြီးတစ်နာရီအတွင်း approve လုပ်ပေးပါမယ်။ ကျေးဇူးတင်ပါတယ်။'),
-            ('N3', 'Intermediate Level - Japanese', 
-            'N3 Course Content: Complex grammar, kanji, reading passages, listening exercises. This level bridges the gap between basic and advanced Japanese.\n\nသင်ခန်းစာများ အားဝယ်ယူရာတွင်လွယ်ကူစေရန် KBZ payဖြင့်ငွေချေနိုင်ပါတယ် ငွေချေရန် scan ဖတ်ပါ note တွင်ဝယ်ယူသည့် သင်ခန်းစာနံပါတ်ကိုထည့်သွင်းရေးသားပေးပါ။ ဥပမာ: N5, N3။ ငွေလွှဲပြီးတစ်နာရီအတွင်း approve လုပ်ပေးပါမယ်။ ကျေးဇူးတင်ပါတယ်။'),
-            ('N2', 'Upper Intermediate Level - Japanese', 
-            'N2 Course Content: Advanced grammar, extensive vocabulary, complex reading materials. Students can understand Japanese used in everyday situations and in a variety of circumstances.\n\nသင်ခန်းစာများ အားဝယ်ယူရာတွင်လွယ်ကူစေရန် KBZ payဖြင့်ငွေချေနိုင်ပါတယ် ငွေချေရန် scan ဖတ်ပါ note တွင်ဝယ်ယူသည့် သင်ခန်းစာနံပါတ်ကိုထည့်သွင်းရေးသားပေးပါ။ ဥပမာ: N5, N3။ ငွေလွှဲပြီးတစ်နာရီအတွင်း approve လုပ်ပေးပါမယ်။ ကျေးဇူးတင်ပါတယ်။'),
-            ('N1', 'Advanced Level - Japanese', 
-            'N1 Course Content: Native-level fluency, specialized vocabulary, nuanced expressions. This is the highest level of Japanese language proficiency.\n\nသင်ခန်းစာများ အားဝယ်ယူရာတွင်လွယ်ကူစေရန် KBZ payဖြင့်ငွေချေနိုင်ပါတယ် ငွေချေရန် scan ဖတ်ပါ note တွင်ဝယ်ယူသည့် သင်ခန်းစာနံပါတ်ကိုထည့်သွင်းရေးသားပေးပါ။ ဥပမာ: N5, N3။ ငွေလွှဲပြီးတစ်နာရီအတွင်း approve လုပ်ပေးပါမယ်။ ကျေးဇူးတင်ပါတယ်။')
+            ('N5', 'Beginner Level - Basic Japanese (50000 Ks)',
+            'N5 Course Content: Hiragana, Katakana, basic grammar, simple conversations. This level focuses on understanding basic Japanese phrases and expressions used in daily life.\n\nသင်ခန်းစာများ အားဝယ်ယူရာတွင်လွယ်ကူစေရန် KBZ payဖြင့်ငွေချေနိုင်ပါတယ် ငွေချေရန် scan ဖတ်ပါ note တွင်မိမိ အကောင့်ဖွင့်ထားသည့် gmail ကိုထည့်ပေးပါ။ ဥပမာ susumyat@gmail.com, kyawkyaw@gmail.com။ ငွေလွှဲပြီးတစ်နာရီအတွင်း approve လုပ်ပေးပါမယ်။ ကျေးဇူးတင်ပါတယ်။'),
+            ('N4', 'Elementary Level - Basic Japanese (70000 Ks)', 
+            'N4 Course Content: More grammar structures, vocabulary building, reading comprehension. Students learn to understand basic Japanese and read simple sentences.\n\nသင်ခန်းစာများ အားဝယ်ယူရာတွင်လွယ်ကူစေရန် KBZ payဖြင့်ငွေချေနိုင်ပါတယ် ငွေချေရန် scan ဖတ်ပါ note တွင်မိမိ အကောင့်ဖွင့်ထားသည့် gmail ကိုထည့်ပေးပါ။ ဥပမာ susumyat@gmail.com, kyawkyaw@gmail.com။ ငွေလွှဲပြီးတစ်နာရီအတွင်း approve လုပ်ပေးပါမယ်။ ကျေးဇူးတင်ပါတယ်။'),
+            ('N3', 'Intermediate Level - Japanese (90000 Ks)', 
+            'N3 Course Content: Complex grammar, kanji, reading passages, listening exercises. This level bridges the gap between basic and advanced Japanese.\n\nသင်ခန်းစာများ အားဝယ်ယူရာတွင်လွယ်ကူစေရန် KBZ payဖြင့်ငွေချေနိုင်ပါတယ် ငွေချေရန် scan ဖတ်ပါ note တွင်မိမိ အကောင့်ဖွင့်ထားသည့် gmail ကိုထည့်ပေးပါ။ ဥပမာ susumyat@gmail.com, kyawkyaw@gmail.com။ ငွေလွှဲပြီးတစ်နာရီအတွင်း approve လုပ်ပေးပါမယ်။ ကျေးဇူးတင်ပါတယ်။'),
+            ('N2', 'Upper Intermediate Level - Japanese (120000 Ks)', 
+            'N2 Course Content: Advanced grammar, extensive vocabulary, complex reading materials. Students can understand Japanese used in everyday situations and in a variety of circumstances.\n\nသင်ခန်းစာများ အားဝယ်ယူရာတွင်လွယ်ကူစေရန် KBZ payဖြင့်ငွေချေနိုင်ပါတယ် ငွေချေရန် scan ဖတ်ပါ note တွင်မိမိ အကောင့်ဖွင့်ထားသည့် gmail ကိုထည့်ပေးပါ။ ဥပမာ susumyat@gmail.com, kyawkyaw@gmail.com။ ငွေလွှဲပြီးတစ်နာရီအတွင်း approve လုပ်ပေးပါမယ်။ ကျေးဇူးတင်ပါတယ်။'),
+            ('N1', 'Advanced Level - Japanese (150000 Ks)', 
+            'N1 Course Content: Native-level fluency, specialized vocabulary, nuanced expressions. This is the highest level of Japanese language proficiency.\n\nသင်ခန်းစာများ အားဝယ်ယူရာတွင်လွယ်ကူစေရန် KBZ payဖြင့်ငွေချေနိုင်ပါတယ် ငွေချေရန် scan ဖတ်ပါ note တွင်မိမိ အကောင့်ဖွင့်ထားသည့် gmail ကိုထည့်ပေးပါ။ ဥပမာ susumyat@gmail.com, kyawkyaw@gmail.com။ ငွေလွှဲပြီးတစ်နာရီအတွင်း approve လုပ်ပေးပါမယ်။ ကျေးဇူးတင်ပါတယ်။')
         ]
         cursor.executemany('INSERT INTO courses (level, description, content) VALUES (?, ?, ?)', courses_data)
             
@@ -374,7 +374,6 @@ def logout():
     return jsonify({'success': True, 'message': 'Logged out successfully'})
 
 @app.route('/courses')
-@login_required
 def courses():
     conn = get_db()
     cursor = conn.cursor()
@@ -384,9 +383,11 @@ def courses():
         cursor.execute('SELECT * FROM courses')
         courses = cursor.fetchall()
         
-        # Get user's purchases
-        cursor.execute('SELECT course_id, status FROM purchases WHERE user_id = ?', (session['user_id'],))
-        purchases = {row['course_id']: row['status'] for row in cursor.fetchall()}
+        # Get user's purchases if logged in
+        purchases = {}
+        if 'user_id' in session:
+            cursor.execute('SELECT course_id, status FROM purchases WHERE user_id = ?', (session['user_id'],))
+            purchases = {row['course_id']: row['status'] for row in cursor.fetchall()}
         
         conn.close()
         
@@ -792,6 +793,15 @@ def submit_support():
         socketio.emit('new_support_message', message_data, room='admin')
         logger.info(f"New support message emitted: {message_data}")
         
+        # Emit real-time notification to sender
+        socketio.emit('message_sent', {
+            'id': message_id,
+            'message_type': message_type,
+            'subject': subject,
+            'message': message,
+            'status': 'pending'
+        }, room=f"user_{session['user_id']}")
+        
         return jsonify({
             'success': True, 
             'message': 'Your message has been sent. We will get back to you soon.',
@@ -859,6 +869,16 @@ def submit_teacher_message():
         # Emit real-time notification to admin room
         socketio.emit('new_teacher_message', message_data, room='admin')
         logger.info(f"New teacher message emitted: {message_data}")
+        
+        # Emit real-time notification to sender
+        socketio.emit('message_sent', {
+            'id': message_id,
+            'message_type': 'teacher',
+            'subject': subject,
+            'message': message,
+            'file_path': file_path,
+            'status': 'pending'
+        }, room=f"user_{session['user_id']}")
         
         return jsonify({
             'success': True, 
