@@ -247,6 +247,21 @@
             box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
         }
         
+        .btn-refresh {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+            border-radius: 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-refresh:hover {
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
         .section {
             margin: 40px 0;
             animation: fadeIn 0.8s ease;
@@ -1166,6 +1181,67 @@
             color: var(--dark-gray);
         }
         
+        /* Notification indicator */
+        .notification-indicator {
+            display: none;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 10px;
+            height: 10px;
+            background-color: var(--danger-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        /* Contact Us Modal */
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .contact-item i {
+            font-size: 20px;
+            color: var(--primary-color);
+            width: 30px;
+            text-align: center;
+        }
+        
+        .contact-item span {
+            font-size: 16px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--light-gray);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-3px);
+        }
+        
         /* Mobile-specific styles */
         @media (max-width: 768px) {
             .container {
@@ -1461,25 +1537,6 @@
             100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
         }
         
-        /* Swipe indicator */
-        .swipe-indicator {
-            position: fixed;
-            top: 50%;
-            left: 10px;
-            transform: translateY(-50%);
-            width: 4px;
-            height: 60px;
-            background-color: rgba(231, 76, 60, 0.5);
-            border-radius: 2px;
-            z-index: 998;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .swipe-indicator.show {
-            opacity: 1;
-        }
-        
         /* QR Code loading state */
         .qr-loading {
             display: flex;
@@ -1513,6 +1570,7 @@
                         <li><a href="#" id="home-link">Home</a></li>
                         <li><a href="#" id="courses-link">Courses</a></li>
                         <li><a href="#" id="support-link" style="display: none;">Support</a></li>
+                        <li><a href="#" id="contact-link">Contact Us</a></li>
                         <li><a href="#" id="login-link" style="display: none;">Login</a></li>
                         <li><a href="#" id="register-link" style="display: none;">Register</a></li>
                         <li><a href="#" id="logout-link" style="display: none;">Logout</a></li>
@@ -1525,9 +1583,6 @@
 
     <!-- Overlay for mobile menu -->
     <div class="overlay" id="overlay"></div>
-    
-    <!-- Swipe indicator -->
-    <div class="swipe-indicator" id="swipe-indicator"></div>
 
     <main class="container">
         <!-- Home Section -->
@@ -1625,7 +1680,12 @@
 
         <!-- Courses Section -->
         <section id="courses-section" class="section" style="display: none;">
-            <h2 class="section-title">Japanese Courses</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 class="section-title" style="margin-bottom: 0;">Japanese Courses</h2>
+                <button class="btn-refresh" id="refresh-courses-btn">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
             <div id="courses-container" class="courses-grid">
                 <!-- Courses will be loaded here -->
             </div>
@@ -1720,7 +1780,12 @@
 
         <!-- Admin Dashboard Section -->
         <section id="admin-dashboard-section" class="section" style="display: none;">
-            <h2 class="section-title">Admin Dashboard</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 class="section-title" style="margin-bottom: 0;">Admin Dashboard</h2>
+                <button class="btn-refresh" id="refresh-admin-btn">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
             
             <div class="tabs">
                 <div class="tab active" id="purchases-tab">Purchases</div>
@@ -1903,6 +1968,48 @@
         </div>
     </div>
 
+    <!-- Contact Us Modal -->
+    <div id="contact-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Contact Us</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>No. 123, Pyay Road, Hledan, Kamayut Township, Yangon, Myanmar</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>+95 9 123 456 789</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>info@hannayjapanese.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Monday - Friday: 9:00 AM - 6:00 PM</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Saturday - Sunday: 9:00 AM - 5:00 PM</span>
+                    </div>
+                </div>
+                
+                <h4 style="margin-top: 20px; margin-bottom: 10px;">Follow Us</h4>
+                <div class="social-links">
+                    <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Notification -->
     <div id="notification" class="notification">
         <i class="fas fa-check-circle"></i>
@@ -1943,14 +2050,6 @@
         let currentQuizQuestion = 0;
         let quizScore = 0;
         
-        // Touch/swipe variables
-        let touchStartX = 0;
-        let touchEndX = 0;
-        let touchStartY = 0;
-        let touchEndY = 0;
-        let swipeIndicator = document.getElementById('swipe-indicator');
-        let swipeIndicatorTimeout;
-
         // DOM elements
         const homeSection = document.getElementById('home-section');
         const authSection = document.getElementById('auth-section');
@@ -1963,6 +2062,7 @@
         const courseModal = document.getElementById('course-modal');
         const supportReplyModal = document.getElementById('support-reply-modal');
         const teacherMessageModal = document.getElementById('teacher-message-modal');
+        const contactModal = document.getElementById('contact-modal');
         const notification = document.getElementById('notification');
         const notificationMessage = document.getElementById('notification-message');
         const connectionStatus = document.getElementById('connection-status');
@@ -1974,6 +2074,7 @@
         const homeLink = document.getElementById('home-link');
         const coursesLink = document.getElementById('courses-link');
         const supportLink = document.getElementById('support-link');
+        const contactLink = document.getElementById('contact-link');
         const loginLink = document.getElementById('login-link');
         const registerLink = document.getElementById('register-link');
         const logoutLink = document.getElementById('logout-link');
@@ -2056,66 +2157,6 @@
             });
         });
         
-        // Touch event handlers for swipe gestures
-        document.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-            touchStartY = e.changedTouches[0].screenY;
-            
-            // Show swipe indicator when touching near the left edge
-            if (touchStartX < 20 && !mainNav.classList.contains('active')) {
-                swipeIndicator.classList.add('show');
-                
-                // Clear any existing timeout
-                if (swipeIndicatorTimeout) {
-                    clearTimeout(swipeIndicatorTimeout);
-                }
-                
-                // Hide indicator after 1 second
-                swipeIndicatorTimeout = setTimeout(() => {
-                    swipeIndicator.classList.remove('show');
-                }, 1000);
-            }
-        }, { passive: true });
-        
-        document.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            touchEndY = e.changedTouches[0].screenY;
-            handleSwipe();
-            
-            // Hide swipe indicator
-            swipeIndicator.classList.remove('show');
-            
-            // Clear timeout if it exists
-            if (swipeIndicatorTimeout) {
-                clearTimeout(swipeIndicatorTimeout);
-            }
-        }, { passive: true });
-        
-        function handleSwipe() {
-            // Calculate horizontal distance
-            const swipeDistance = touchEndX - touchStartX;
-            
-            // Minimum distance required for a swipe
-            const minSwipeDistance = 50;
-            
-            // Check if it's a horizontal swipe (not vertical)
-            const verticalDistance = Math.abs(touchEndY - touchStartY);
-            const isHorizontalSwipe = Math.abs(swipeDistance) > verticalDistance;
-            
-            if (isHorizontalSwipe) {
-                // Swipe right to open menu
-                if (swipeDistance > minSwipeDistance && touchStartX < 30) {
-                    mainNav.classList.add('active');
-                    overlay.classList.add('active');
-                }
-                // Swipe left to close menu
-                else if (swipeDistance < -minSwipeDistance && mainNav.classList.contains('active')) {
-                    mainNav.classList.remove('active');
-                    overlay.classList.remove('active');
-                }
-            }
-        }
-
         // Initialize Socket.IO connection
         function initializeSocket() {
             socket = io({
@@ -2157,14 +2198,16 @@
                 console.log('Reconnected to server');
                 updateConnectionStatus('connected');
                 
-                // Re-join room after reconnection
-                if (currentUser) {
-                    if (currentUser.is_admin) {
-                        socket.emit('join_admin_room');
-                    } else {
-                        socket.emit('join_user_room', {user_id: currentUser.id});
+                // Re-check user status and join room after reconnection
+                checkLoginStatus().then(() => {
+                    if (currentUser) {
+                        if (currentUser.is_admin) {
+                            socket.emit('join_admin_room');
+                        } else {
+                            socket.emit('join_user_room', {user_id: currentUser.id});
+                        }
                     }
-                }
+                });
             });
             
             // Listen for initial purchases (admin only)
@@ -2193,6 +2236,7 @@
                 if (currentUser && currentUser.is_admin) {
                     addNewPurchaseToTable(data);
                     showNotification(`New purchase request from ${data.user_email} for ${data.course_level}`, 'info');
+                    updateNotificationIndicator('admin', true);
                 }
             });
             
@@ -2201,6 +2245,7 @@
                 if (currentUser && currentUser.is_admin) {
                     addNewSupportMessageToTable(data);
                     showNotification(`New support message from ${data.user_email}: ${data.subject}`, 'info');
+                    updateNotificationIndicator('admin', true);
                 }
             });
             
@@ -2209,6 +2254,7 @@
                 if (currentUser && currentUser.is_admin) {
                     addNewTeacherMessageToTable(data);
                     showNotification(`New teacher message from ${data.user_email}: ${data.subject}`, 'info');
+                    updateNotificationIndicator('admin', true);
                 }
             });
             
@@ -2256,8 +2302,8 @@
             socket.on('support_reply_received', (data) => {
                 if (currentUser && !currentUser.is_admin) {
                     showNotification(data.message, 'info');
-                    // Update the specific message in the UI
                     updateSupportMessageInUI(data.message_id, data.reply);
+                    updateNotificationIndicator('support', true);
                 }
             });
             
@@ -2265,8 +2311,20 @@
             socket.on('teacher_reply_received', (data) => {
                 if (currentUser && !currentUser.is_admin) {
                     showNotification(data.message, 'info');
-                    // Update the specific message in the UI
                     updateTeacherMessageInUI(data.message_id, data.reply);
+                    updateNotificationIndicator('teacher', true);
+                }
+            });
+            
+            // Listen for message sent confirmation (user only)
+            socket.on('message_sent', (data) => {
+                if (currentUser && !currentUser.is_admin) {
+                    if (data.message_type === 'support') {
+                        addNewSupportMessageToUserUI(data);
+                    } else if (data.message_type === 'teacher') {
+                        addNewTeacherMessageToUserUI(data);
+                    }
+                    showNotification('Your message has been sent successfully', 'success');
                 }
             });
             
@@ -2317,13 +2375,8 @@
 
         coursesLink.addEventListener('click', (e) => {
             e.preventDefault();
-            if (currentUser) {
-                showSection('courses');
-                loadCourses();
-            } else {
-                showNotification('Please login to view courses', 'warning');
-                showSection('auth');
-            }
+            showSection('courses');
+            loadCourses();
         });
 
         supportLink.addEventListener('click', (e) => {
@@ -2335,6 +2388,11 @@
                 showNotification('Please login to access support', 'warning');
                 showSection('auth');
             }
+        });
+
+        contactLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            contactModal.style.display = 'flex';
         });
 
         loginLink.addEventListener('click', (e) => {
@@ -2360,13 +2418,8 @@
         });
 
         document.getElementById('get-started-btn').addEventListener('click', () => {
-            if (currentUser) {
-                showSection('courses');
-                loadCourses();
-            } else {
-                showSection('auth');
-                showLoginForm();
-            }
+            showSection('courses');
+            loadCourses();
         });
 
         document.getElementById('show-register').addEventListener('click', (e) => {
@@ -2398,6 +2451,17 @@
             if (!isProcessing) {
                 adminLogin();
             }
+        });
+
+        // Refresh buttons
+        document.getElementById('refresh-courses-btn').addEventListener('click', () => {
+            loadCourses();
+            showNotification('Courses refreshed', 'success');
+        });
+
+        document.getElementById('refresh-admin-btn').addEventListener('click', () => {
+            loadAdminDashboard();
+            showNotification('Dashboard refreshed', 'success');
         });
 
         // Support form event listeners
@@ -2440,6 +2504,7 @@
             supportMessagesContent.classList.add('active');
             teacherMessagesContent.classList.remove('active');
             newMessageContent.classList.remove('active');
+            updateNotificationIndicator('support', false);
         });
 
         teacherMessagesTab.addEventListener('click', () => {
@@ -2449,6 +2514,7 @@
             teacherMessagesContent.classList.add('active');
             supportMessagesContent.classList.remove('active');
             newMessageContent.classList.remove('active');
+            updateNotificationIndicator('teacher', false);
         });
 
         newMessageTab.addEventListener('click', () => {
@@ -2477,6 +2543,7 @@
             supportContent.classList.add('active');
             purchasesContent.classList.remove('active');
             teacherContent.classList.remove('active');
+            updateNotificationIndicator('admin', false);
         });
 
         teacherTab.addEventListener('click', () => {
@@ -2486,6 +2553,7 @@
             teacherContent.classList.add('active');
             purchasesContent.classList.remove('active');
             supportContent.classList.remove('active');
+            updateNotificationIndicator('admin', false);
         });
 
         // CAPTCHA refresh buttons
@@ -2519,6 +2587,12 @@
             teacherMessageModal.style.display = 'none';
         });
 
+        // Close contact modal
+        const closeContactModal = contactModal.querySelector('.close-modal');
+        closeContactModal.addEventListener('click', () => {
+            contactModal.style.display = 'none';
+        });
+
         window.addEventListener('click', (e) => {
             if (e.target === courseModal) {
                 courseModal.style.display = 'none';
@@ -2530,6 +2604,9 @@
             }
             if (e.target === teacherMessageModal) {
                 teacherMessageModal.style.display = 'none';
+            }
+            if (e.target === contactModal) {
+                contactModal.style.display = 'none';
             }
         });
 
@@ -2629,6 +2706,38 @@
                 logoutLink.style.display = 'none';
                 supportLink.style.display = 'none';
                 adminLink.style.display = 'none';
+            }
+            
+            // Always show courses link
+            coursesLink.style.display = 'block';
+        }
+
+        // Update notification indicator
+        function updateNotificationIndicator(section, hasNewMessage) {
+            let indicator;
+            
+            if (section === 'support' || section === 'teacher') {
+                indicator = document.getElementById('support-link').querySelector('.notification-indicator');
+            } else if (section === 'admin') {
+                indicator = document.getElementById('admin-link').querySelector('.notification-indicator');
+            }
+            
+            if (!indicator) {
+                // Create indicator
+                indicator = document.createElement('span');
+                indicator.className = 'notification-indicator';
+                
+                if (section === 'support' || section === 'teacher') {
+                    document.getElementById('support-link').appendChild(indicator);
+                } else if (section === 'admin') {
+                    document.getElementById('admin-link').appendChild(indicator);
+                }
+            }
+            
+            if (hasNewMessage) {
+                indicator.style.display = 'inline-block';
+            } else {
+                indicator.style.display = 'none';
             }
         }
 
@@ -2873,6 +2982,14 @@
                     // Add event listeners to view course buttons
                     document.querySelectorAll('.view-course-btn').forEach(btn => {
                         btn.addEventListener('click', () => {
+                            // Check if user is logged in
+                            if (!currentUser) {
+                                showNotification('Please login or register to view course details', 'warning');
+                                showSection('auth');
+                                showLoginForm();
+                                return;
+                            }
+                            
                             const courseId = btn.getAttribute('data-course-id');
                             const courseLevel = btn.getAttribute('data-course-level');
                             const courseDescription = btn.getAttribute('data-course-description');
@@ -2942,6 +3059,7 @@
             currentQuizQuestion = 0;
             quizScore = 0;
         }
+        
         function updateResourceLinks(courseLevel) {
             const resources = courseResources[courseLevel];
             if (resources) {
@@ -2955,6 +3073,15 @@
         }
 
         function showCourseModal() {
+            // Check if user is logged in
+            if (!currentUser) {
+                showNotification('Please login or register to view course details', 'warning');
+                courseModal.style.display = 'none';
+                showSection('auth');
+                showLoginForm();
+                return;
+            }
+            
             resetModal();
             
             document.getElementById('modal-course-title').textContent = currentCourse.level;
@@ -3740,6 +3867,69 @@
             });
         }
 
+        // Add new support message to user UI
+        function addNewSupportMessageToUserUI(message) {
+            const container = document.getElementById('support-messages-list');
+            
+            // If container displays "No support messages yet", clear it
+            if (container.querySelector('p')) {
+                container.innerHTML = '';
+            }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message-item sent';
+            messageDiv.setAttribute('data-message-id', message.id);
+            
+            messageDiv.innerHTML = `
+                <div class="message-header">You</div>
+                <div class="message-content">${message.message}</div>
+                <div class="message-time">${new Date().toLocaleString()}</div>
+            `;
+            
+            container.appendChild(messageDiv);
+            
+            // Scroll to new message
+            messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            // Update notification indicator
+            updateNotificationIndicator('support', false);
+        }
+
+        // Add new teacher message to user UI
+        function addNewTeacherMessageToUserUI(message) {
+            const container = document.getElementById('teacher-messages-list');
+            
+            // If container displays "No teacher messages yet", clear it
+            if (container.querySelector('p')) {
+                container.innerHTML = '';
+            }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message-item sent';
+            messageDiv.setAttribute('data-message-id', message.id);
+            
+            let fileHtml = '';
+            if (message.file_path) {
+                const fileName = message.file_path.split('/').pop();
+                fileHtml = `<a href="/download/${message.file_path}" class="file-attachment" download><i class="fas fa-paperclip"></i> ${fileName}</a>`;
+            }
+            
+            messageDiv.innerHTML = `
+                <div class="message-header">You</div>
+                <div class="message-content">${message.message}</div>
+                ${fileHtml}
+                <div class="message-time">${new Date().toLocaleString()}</div>
+            `;
+            
+            container.appendChild(messageDiv);
+            
+            // Scroll to new message
+            messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            // Update notification indicator
+            updateNotificationIndicator('teacher', false);
+        }
+
         // Update support message in UI
         function updateSupportMessageInUI(messageId, reply) {
             const messageDiv = document.querySelector(`.message-item[data-message-id="${messageId}"]`);
@@ -3757,7 +3947,7 @@
                 // Insert after the original message
                 messageDiv.parentNode.insertBefore(replyDiv, messageDiv.nextSibling);
                 
-                // Scroll to the new reply
+                // Scroll to new reply
                 replyDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         }
@@ -3779,7 +3969,7 @@
                 // Insert after the original message
                 messageDiv.parentNode.insertBefore(replyDiv, messageDiv.nextSibling);
                 
-                // Scroll to the new reply
+                // Scroll to new reply
                 replyDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         }
@@ -3827,14 +4017,11 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    showNotification(data.message, 'success');
-                    
                     // Reset form
                     document.getElementById('support-form-element').reset();
                     supportFormContainer.classList.remove('active');
                     
-                    // Reload messages
-                    loadUserMessages();
+                    // The message will be added via Socket.IO event
                 } else {
                     showNotification(data.message, 'error');
                 }
@@ -4013,7 +4200,7 @@
                     };
                     updateUI();
                     
-                    // Join appropriate room via Socket.IO
+                    // Join appropriate room
                     if (socket) {
                         if (data.is_admin) {
                             socket.emit('join_admin_room');
@@ -4021,9 +4208,17 @@
                             socket.emit('join_user_room', {user_id: data.user_id});
                         }
                     }
+                    
+                    // If admin is logged in, redirect to admin dashboard
+                    if (data.is_admin) {
+                        showSection('admin-dashboard');
+                        loadAdminDashboard();
+                    }
                 }
+                return data;
             } catch (error) {
                 console.error('Check login status error:', error);
+                return { logged_in: false };
             }
         }
 
@@ -4038,18 +4233,24 @@
             // Check login status
             checkLoginStatus();
             
+            // Always show courses link in navigation
+            coursesLink.style.display = 'block';
+            
             // Check if we're on a specific page based on URL
             const path = window.location.pathname;
             
             if (path === '/admin') {
                 showSection('admin-login');
             } else if (path === '/admin/dashboard') {
-                if (currentUser && currentUser.is_admin) {
-                    showSection('admin-dashboard');
-                    loadAdminDashboard();
-                } else {
-                    showSection('admin-login');
-                }
+                // We'll check login status first, then redirect if needed
+                checkLoginStatus().then(data => {
+                    if (data.logged_in && data.is_admin) {
+                        showSection('admin-dashboard');
+                        loadAdminDashboard();
+                    } else {
+                        showSection('admin-login');
+                    }
+                });
             } else if (path === '/support') {
                 if (currentUser) {
                     showSection('support');
