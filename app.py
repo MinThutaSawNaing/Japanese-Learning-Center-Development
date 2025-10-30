@@ -37,7 +37,8 @@ def init_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         email TEXT UNIQUE NOT NULL,
         password_hash TEXT NOT NULL,
-        is_admin INTEGER DEFAULT 0
+        is_admin INTEGER DEFAULT 0,
+        is_banned INTEGER DEFAULT 0
     )
     ''')
     
@@ -225,11 +226,20 @@ def handle_connect():
                 ''')
                 teacher_messages = [dict(row) for row in cursor.fetchall()]
                 
+                # Send users list to admin
+                cursor.execute('''
+                SELECT id, email, is_admin, is_banned
+                FROM users
+                ORDER BY id DESC
+                ''')
+                users = [dict(row) for row in cursor.fetchall()]
+                
                 conn.close()
                 
                 emit('initial_purchases', {'purchases': purchases})
                 emit('initial_support_messages', {'messages': support_messages})
                 emit('initial_teacher_messages', {'messages': teacher_messages})
+                emit('initial_users', {'users': users})
             except Exception as e:
                 logger.error(f"Error sending initial data: {e}")
 
@@ -337,6 +347,10 @@ def login():
         
         if not user or not check_password_hash(user['password_hash'], password):
             return jsonify({'success': False, 'message': 'Invalid email or password'})
+        
+        # Check if user is banned
+        if user['is_banned'] == 1:
+            return jsonify({'success': False, 'message': 'Your account has been banned. Please contact support.'})
         
         session['user_id'] = user['id']
         session['is_admin'] = user['is_admin']
@@ -506,6 +520,10 @@ def admin_login():
         if not admin or not check_password_hash(admin['password_hash'], password):
             return jsonify({'success': False, 'message': 'Invalid admin credentials'})
         
+        # Check if admin is banned
+        if admin['is_banned'] == 1:
+            return jsonify({'success': False, 'message': 'Your admin account has been banned.'})
+        
         session['user_id'] = admin['id']
         session['is_admin'] = 1
         
@@ -558,12 +576,21 @@ def admin_dashboard():
         ''')
         teacher_messages = cursor.fetchall()
         
+        # Get all users
+        cursor.execute('''
+        SELECT id, email, is_admin, is_banned
+        FROM users
+        ORDER BY id DESC
+        ''')
+        users = cursor.fetchall()
+        
         conn.close()
         
         return render_template('main.html', admin_dashboard=True, 
                              purchases=purchases, 
                              support_messages=support_messages,
-                             teacher_messages=teacher_messages)
+                             teacher_messages=teacher_messages,
+                             users=users)
         
     except Exception as e:
         logger.error(f"Admin dashboard error: {e}")
@@ -571,7 +598,8 @@ def admin_dashboard():
         return render_template('main.html', admin_dashboard=True, 
                              purchases=[], 
                              support_messages=[],
-                             teacher_messages=[])
+                             teacher_messages=[],
+                             users=[])
 
 @app.route('/admin/dashboard/data')
 @admin_required
@@ -608,12 +636,21 @@ def admin_dashboard_data():
         ''')
         teacher_messages = [dict(row) for row in cursor.fetchall()]
         
+        # Get all users
+        cursor.execute('''
+        SELECT id, email, is_admin, is_banned
+        FROM users
+        ORDER BY id DESC
+        ''')
+        users = [dict(row) for row in cursor.fetchall()]
+        
         conn.close()
         
         return jsonify({
             'purchases': purchases, 
             'support_messages': support_messages,
-            'teacher_messages': teacher_messages
+            'teacher_messages': teacher_messages,
+            'users': users
         })
         
     except Exception as e:
@@ -622,7 +659,8 @@ def admin_dashboard_data():
         return jsonify({
             'purchases': [], 
             'support_messages': [],
-            'teacher_messages': []
+            'teacher_messages': [],
+            'users': []
         })
 
 @app.route('/admin/approve/<int:purchase_id>', methods=['POST'])
@@ -1107,7 +1145,7 @@ def user_status():
         cursor = conn.cursor()
         
         try:
-            cursor.execute('SELECT email, is_admin FROM users WHERE id = ?', (session['user_id'],))
+            cursor.execute('SELECT email, is_admin, is_banned FROM users WHERE id = ?', (session['user_id'],))
             user = cursor.fetchone()
             conn.close()
             
@@ -1116,6 +1154,7 @@ def user_status():
                     'logged_in': True,
                     'email': user['email'],
                     'is_admin': user['is_admin'],
+                    'is_banned': user['is_banned'],
                     'user_id': session['user_id']
                 })
         except Exception as e:
@@ -1124,5 +1163,185 @@ def user_status():
     
     return jsonify({'logged_in': False})
 
+# User Management Routes
+@app.route('/admin/users/ban/<int:user_id>', methods=['POST'])
+@admin_required
+def ban_user(user_id):
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    try:
+        # Get user details before updating
+        cursor.execute('SELECT email, is_admin FROM users WHERE id = ?', (user_id,))
+        user_data = cursor.fetchone()
+        
+        if not user_data:
+            conn.close()
+            return jsonify({'success': False, 'message': 'User not found'})
+        
+        # Don't allow banning other admins
+        if user_data['is_admin'] == 1:
+            conn.close()
+            return jsonify({'success': False, 'message': 'Cannot ban admin users'})
+        
+        # Update user status
+        cursor.execute('UPDATE users SET is_banned = 1 WHERE id = ?', (user_id,))
+        conn.commit()
+        
+        # Get updated user data
+        cursor.execute('SELECT id, email, is_admin, is_banned FROM users WHERE id = ?', (user_id,))
+        updated_user = dict(cursor.fetchone())
+        
+        conn.close()
+        
+        # Emit real-time notification to admin room
+        socketio.emit('user_updated', {
+            'user': updated_user,
+            'action': 'banned'
+        }, room='admin')
+        
+        # Emit real-time notification to specific user
+        socketio.emit('user_banned', {
+            'message': 'Your account has been banned. Please contact support for more information.'
+        }, room=f"user_{user_id}")
+        
+        logger.info(f"User {user_id} ({user_data['email']}) banned")
+        
+        return jsonify({'success': True, 'message': 'User banned successfully'})
+        
+    except Exception as e:
+        logger.error(f"Ban user error: {e}")
+        conn.close()
+        return jsonify({'success': False, 'message': 'Failed to ban user'})
+
+@app.route('/admin/users/unban/<int:user_id>', methods=['POST'])
+@admin_required
+def unban_user(user_id):
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    try:
+        # Get user details before updating
+        cursor.execute('SELECT email FROM users WHERE id = ?', (user_id,))
+        user_data = cursor.fetchone()
+        
+        if not user_data:
+            conn.close()
+            return jsonify({'success': False, 'message': 'User not found'})
+        
+        # Update user status
+        cursor.execute('UPDATE users SET is_banned = 0 WHERE id = ?', (user_id,))
+        conn.commit()
+        
+        # Get updated user data
+        cursor.execute('SELECT id, email, is_admin, is_banned FROM users WHERE id = ?', (user_id,))
+        updated_user = dict(cursor.fetchone())
+        
+        conn.close()
+        
+        # Emit real-time notification to admin room
+        socketio.emit('user_updated', {
+            'user': updated_user,
+            'action': 'unbanned'
+        }, room='admin')
+        
+        logger.info(f"User {user_id} ({user_data['email']}) unbanned")
+        
+        return jsonify({'success': True, 'message': 'User unbanned successfully'})
+        
+    except Exception as e:
+        logger.error(f"Unban user error: {e}")
+        conn.close()
+        return jsonify({'success': False, 'message': 'Failed to unban user'})
+
+# Admin Management Routes
+@app.route('/admin/admins/create', methods=['POST'])
+@admin_required
+def create_admin():
+    email = request.form.get('email')
+    password = request.form.get('password')
+    
+    if not email or not password:
+        return jsonify({'success': False, 'message': 'Email and password are required'})
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    try:
+        # Check if user already exists
+        cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
+        if cursor.fetchone():
+            conn.close()
+            return jsonify({'success': False, 'message': 'User with this email already exists'})
+        
+        # Create new admin user
+        password_hash = generate_password_hash(password)
+        cursor.execute('INSERT INTO users (email, password_hash, is_admin) VALUES (?, ?, ?)', 
+                      (email, password_hash, 1))
+        conn.commit()
+        
+        # Get the new admin's ID
+        admin_id = cursor.lastrowid
+        
+        # Get new admin data
+        cursor.execute('SELECT id, email, is_admin, is_banned FROM users WHERE id = ?', (admin_id,))
+        new_admin = dict(cursor.fetchone())
+        
+        conn.close()
+        
+        # Emit real-time notification to admin room
+        socketio.emit('admin_created', {
+            'admin': new_admin
+        }, room='admin')
+        
+        logger.info(f"New admin created: {email} (ID: {admin_id})")
+        
+        return jsonify({'success': True, 'message': 'Admin created successfully'})
+        
+    except Exception as e:
+        logger.error(f"Create admin error: {e}")
+        conn.close()
+        return jsonify({'success': False, 'message': 'Failed to create admin'})
+
+@app.route('/admin/admins/delete/<int:admin_id>', methods=['POST'])
+@admin_required
+def delete_admin(admin_id):
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    try:
+        # Don't allow deleting yourself
+        if admin_id == session['user_id']:
+            conn.close()
+            return jsonify({'success': False, 'message': 'Cannot delete your own account'})
+        
+        # Get admin details before deleting
+        cursor.execute('SELECT email FROM users WHERE id = ? AND is_admin = 1', (admin_id,))
+        admin_data = cursor.fetchone()
+        
+        if not admin_data:
+            conn.close()
+            return jsonify({'success': False, 'message': 'Admin not found'})
+        
+        # Delete admin
+        cursor.execute('DELETE FROM users WHERE id = ?', (admin_id,))
+        conn.commit()
+        
+        conn.close()
+        
+        # Emit real-time notification to admin room
+        socketio.emit('admin_deleted', {
+            'admin_id': admin_id,
+            'email': admin_data['email']
+        }, room='admin')
+        
+        logger.info(f"Admin deleted: {admin_data['email']} (ID: {admin_id})")
+        
+        return jsonify({'success': True, 'message': 'Admin deleted successfully'})
+        
+    except Exception as e:
+        logger.error(f"Delete admin error: {e}")
+        conn.close()
+        return jsonify({'success': False, 'message': 'Failed to delete admin'})
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=7777, debug=True)
