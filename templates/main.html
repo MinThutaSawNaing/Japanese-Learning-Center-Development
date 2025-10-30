@@ -700,6 +700,16 @@
             color: var(--secondary-color);
         }
         
+        .status-badge.banned {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: var(--danger-color);
+        }
+        
+        .status-badge.admin {
+            background-color: rgba(155, 89, 182, 0.2);
+            color: #9b59b6;
+        }
+        
         .action-buttons {
             display: flex;
             gap: 8px;
@@ -1240,6 +1250,90 @@
             background-color: var(--primary-color);
             color: white;
             transform: translateY(-3px);
+        }
+        
+        /* User Management Modal */
+        .user-management-modal .modal-content {
+            max-width: 800px;
+        }
+        
+        .user-detail {
+            background-color: var(--beige);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .user-detail-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .user-detail-email {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .user-detail-role {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .user-detail-role.admin {
+            background-color: rgba(155, 89, 182, 0.2);
+            color: #9b59b6;
+        }
+        
+        .user-detail-role.user {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: var(--secondary-color);
+        }
+        
+        .user-detail-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .user-detail-status.active {
+            background-color: rgba(39, 174, 96, 0.2);
+            color: var(--success-color);
+        }
+        
+        .user-detail-status.banned {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: var(--danger-color);
+        }
+        
+        .user-detail-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        
+        .user-detail-id {
+            font-size: 12px;
+            color: var(--dark-gray);
+        }
+        
+        /* Admin Management Modal */
+        .admin-management-modal .modal-content {
+            max-width: 600px;
+        }
+        
+        .admin-form {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: var(--shadow-md);
         }
         
         /* Mobile-specific styles */
@@ -1791,6 +1885,8 @@
                 <div class="tab active" id="purchases-tab">Purchases</div>
                 <div class="tab" id="support-tab">Support Messages</div>
                 <div class="tab" id="teacher-tab">Teacher Messages</div>
+                <div class="tab" id="users-tab">User Management</div>
+                <div class="tab" id="admins-tab">Admin Management</div>
             </div>
             
             <div class="tab-content active" id="purchases-content">
@@ -1847,6 +1943,49 @@
                         </thead>
                         <tbody id="admin-teacher-tbody">
                             <!-- Teacher messages will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="users-content">
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-users-tbody">
+                            <!-- Users will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="admins-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3>Admin Accounts</h3>
+                    <button class="btn" id="create-admin-btn">
+                        <i class="fas fa-plus"></i> Create Admin
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-admins-tbody">
+                            <!-- Admins will be loaded here -->
                         </tbody>
                     </table>
                 </div>
@@ -1968,6 +2107,46 @@
         </div>
     </div>
 
+    <!-- User Management Modal -->
+    <div id="user-management-modal" class="modal user-management-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">User Management</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="user-details-container">
+                    <!-- User details will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Management Modal -->
+    <div id="admin-management-modal" class="modal admin-management-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Create Admin Account</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="admin-form">
+                    <form id="create-admin-form-element">
+                        <div class="form-group">
+                            <label for="new-admin-email"><i class="fas fa-envelope"></i> Email</label>
+                            <input type="email" id="new-admin-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-admin-password"><i class="fas fa-lock"></i> Password</label>
+                            <input type="password" id="new-admin-password" required>
+                        </div>
+                        <button type="submit" class="btn" style="width: 100%;">Create Admin</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Contact Us Modal -->
     <div id="contact-modal" class="modal">
         <div class="modal-content">
@@ -2062,6 +2241,8 @@
         const courseModal = document.getElementById('course-modal');
         const supportReplyModal = document.getElementById('support-reply-modal');
         const teacherMessageModal = document.getElementById('teacher-message-modal');
+        const userManagementModal = document.getElementById('user-management-modal');
+        const adminManagementModal = document.getElementById('admin-management-modal');
         const contactModal = document.getElementById('contact-modal');
         const notification = document.getElementById('notification');
         const notificationMessage = document.getElementById('notification-message');
@@ -2100,9 +2281,13 @@
         const purchasesTab = document.getElementById('purchases-tab');
         const supportTab = document.getElementById('support-tab');
         const teacherTab = document.getElementById('teacher-tab');
+        const usersTab = document.getElementById('users-tab');
+        const adminsTab = document.getElementById('admins-tab');
         const purchasesContent = document.getElementById('purchases-content');
         const supportContent = document.getElementById('support-content');
         const teacherContent = document.getElementById('teacher-content');
+        const usersContent = document.getElementById('users-content');
+        const adminsContent = document.getElementById('admins-content');
         
         // Course resources for each level
         const courseResources = {
@@ -2231,6 +2416,13 @@
                 }
             });
             
+            // Listen for initial users (admin only)
+            socket.on('initial_users', (data) => {
+                if (currentUser && currentUser.is_admin && data.users) {
+                    loadUsersIntoTable(data.users);
+                }
+            });
+            
             // Listen for new purchases (admin only)
             socket.on('new_purchase', (data) => {
                 if (currentUser && currentUser.is_admin) {
@@ -2282,6 +2474,30 @@
                 }
             });
             
+            // Listen for user updates (admin only)
+            socket.on('user_updated', (data) => {
+                if (currentUser && currentUser.is_admin) {
+                    updateUserInTable(data.user, data.action);
+                    showNotification(`User ${data.action} successfully`, 'success');
+                }
+            });
+            
+            // Listen for admin creation (admin only)
+            socket.on('admin_created', (data) => {
+                if (currentUser && currentUser.is_admin) {
+                    addNewAdminToTable(data.admin);
+                    showNotification(`New admin created: ${data.admin.email}`, 'success');
+                }
+            });
+            
+            // Listen for admin deletion (admin only)
+            socket.on('admin_deleted', (data) => {
+                if (currentUser && currentUser.is_admin) {
+                    removeAdminFromTable(data.admin_id);
+                    showNotification(`Admin deleted: ${data.email}`, 'success');
+                }
+            });
+            
             // Listen for purchase status changes (user only)
             socket.on('purchase_status_changed', (data) => {
                 if (currentUser && !currentUser.is_admin) {
@@ -2313,6 +2529,17 @@
                     showNotification(data.message, 'info');
                     updateTeacherMessageInUI(data.message_id, data.reply);
                     updateNotificationIndicator('teacher', true);
+                }
+            });
+            
+            // Listen for user banned notification (user only)
+            socket.on('user_banned', (data) => {
+                if (currentUser && !currentUser.is_admin) {
+                    showNotification(data.message, 'error');
+                    // Force logout after a short delay
+                    setTimeout(() => {
+                        logout();
+                    }, 3000);
                 }
             });
             
@@ -2414,7 +2641,13 @@
 
         adminLink.addEventListener('click', (e) => {
             e.preventDefault();
-            showSection('admin-login');
+            // Check if user is already logged in as admin
+            if (currentUser && currentUser.is_admin) {
+                showSection('admin-dashboard');
+                loadAdminDashboard();
+            } else {
+                showSection('admin-login');
+            }
         });
 
         document.getElementById('get-started-btn').addEventListener('click', () => {
@@ -2531,18 +2764,26 @@
             purchasesTab.classList.add('active');
             supportTab.classList.remove('active');
             teacherTab.classList.remove('active');
+            usersTab.classList.remove('active');
+            adminsTab.classList.remove('active');
             purchasesContent.classList.add('active');
             supportContent.classList.remove('active');
             teacherContent.classList.remove('active');
+            usersContent.classList.remove('active');
+            adminsContent.classList.remove('active');
         });
 
         supportTab.addEventListener('click', () => {
             supportTab.classList.add('active');
             purchasesTab.classList.remove('active');
             teacherTab.classList.remove('active');
+            usersTab.classList.remove('active');
+            adminsTab.classList.remove('active');
             supportContent.classList.add('active');
             purchasesContent.classList.remove('active');
             teacherContent.classList.remove('active');
+            usersContent.classList.remove('active');
+            adminsContent.classList.remove('active');
             updateNotificationIndicator('admin', false);
         });
 
@@ -2550,10 +2791,53 @@
             teacherTab.classList.add('active');
             purchasesTab.classList.remove('active');
             supportTab.classList.remove('active');
+            usersTab.classList.remove('active');
+            adminsTab.classList.remove('active');
             teacherContent.classList.add('active');
             purchasesContent.classList.remove('active');
             supportContent.classList.remove('active');
+            usersContent.classList.remove('active');
+            adminsContent.classList.remove('active');
             updateNotificationIndicator('admin', false);
+        });
+
+        usersTab.addEventListener('click', () => {
+            usersTab.classList.add('active');
+            purchasesTab.classList.remove('active');
+            supportTab.classList.remove('active');
+            teacherTab.classList.remove('active');
+            adminsTab.classList.remove('active');
+            usersContent.classList.add('active');
+            purchasesContent.classList.remove('active');
+            supportContent.classList.remove('active');
+            teacherContent.classList.remove('active');
+            adminsContent.classList.remove('active');
+        });
+
+        adminsTab.addEventListener('click', () => {
+            adminsTab.classList.add('active');
+            purchasesTab.classList.remove('active');
+            supportTab.classList.remove('active');
+            teacherTab.classList.remove('active');
+            usersTab.classList.remove('active');
+            adminsContent.classList.add('active');
+            purchasesContent.classList.remove('active');
+            supportContent.classList.remove('active');
+            teacherContent.classList.remove('active');
+            usersContent.classList.remove('active');
+        });
+
+        // Create admin button
+        document.getElementById('create-admin-btn').addEventListener('click', () => {
+            adminManagementModal.style.display = 'flex';
+        });
+
+        // Create admin form
+        document.getElementById('create-admin-form-element').addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (!isProcessing) {
+                createAdmin();
+            }
         });
 
         // CAPTCHA refresh buttons
@@ -2587,6 +2871,19 @@
             teacherMessageModal.style.display = 'none';
         });
 
+        // Close user management modal
+        const closeUserManagementModal = userManagementModal.querySelector('.close-modal');
+        closeUserManagementModal.addEventListener('click', () => {
+            userManagementModal.style.display = 'none';
+        });
+
+        // Close admin management modal
+        const closeAdminManagementModal = adminManagementModal.querySelector('.close-modal');
+        closeAdminManagementModal.addEventListener('click', () => {
+            adminManagementModal.style.display = 'none';
+            document.getElementById('create-admin-form-element').reset();
+        });
+
         // Close contact modal
         const closeContactModal = contactModal.querySelector('.close-modal');
         closeContactModal.addEventListener('click', () => {
@@ -2604,6 +2901,13 @@
             }
             if (e.target === teacherMessageModal) {
                 teacherMessageModal.style.display = 'none';
+            }
+            if (e.target === userManagementModal) {
+                userManagementModal.style.display = 'none';
+            }
+            if (e.target === adminManagementModal) {
+                adminManagementModal.style.display = 'none';
+                document.getElementById('create-admin-form-element').reset();
             }
             if (e.target === contactModal) {
                 contactModal.style.display = 'none';
@@ -2699,6 +3003,16 @@
                 
                 if (currentUser.is_admin) {
                     adminLink.style.display = 'block';
+                    // Hide unnecessary navigation items for admins
+                    homeLink.style.display = 'none';
+                    coursesLink.style.display = 'none';
+                    contactLink.style.display = 'none';
+                } else {
+                    adminLink.style.display = 'none';
+                    // Show navigation items for regular users
+                    homeLink.style.display = 'block';
+                    coursesLink.style.display = 'block';
+                    contactLink.style.display = 'block';
                 }
             } else {
                 loginLink.style.display = 'block';
@@ -2706,10 +3020,11 @@
                 logoutLink.style.display = 'none';
                 supportLink.style.display = 'none';
                 adminLink.style.display = 'none';
+                // Show navigation items for non-logged in users
+                homeLink.style.display = 'block';
+                coursesLink.style.display = 'block';
+                contactLink.style.display = 'block';
             }
-            
-            // Always show courses link
-            coursesLink.style.display = 'block';
         }
 
         // Update notification indicator
@@ -2780,6 +3095,9 @@
                     if (socket) {
                         if (data.is_admin) {
                             socket.emit('join_admin_room');
+                            // Redirect to admin dashboard if admin
+                            showSection('admin-dashboard');
+                            loadAdminDashboard();
                         } else {
                             socket.emit('join_user_room', {user_id: data.user_id});
                         }
@@ -3308,6 +3626,10 @@
                 if (data.teacher_messages) {
                     loadTeacherMessagesIntoTable(data.teacher_messages);
                 }
+                
+                if (data.users) {
+                    loadUsersIntoTable(data.users);
+                }
             } catch (error) {
                 showNotification('Error loading admin dashboard', 'error');
                 console.error('Error loading admin dashboard:', error);
@@ -3692,6 +4014,211 @@
                 setTimeout(() => {
                     row.classList.remove('updated-purchase');
                 }, 2000);
+            }
+        }
+
+        // Load users into admin table
+        function loadUsersIntoTable(users) {
+            const tbody = document.getElementById('admin-users-tbody');
+            tbody.innerHTML = '';
+            
+            users.forEach(user => {
+                addUserRow(user);
+            });
+            
+            // Load admins into admin table
+            loadAdminsIntoTable(users.filter(user => user.is_admin === 1));
+        }
+
+        // Add user row to admin table
+        function addUserRow(user) {
+            const tbody = document.getElementById('admin-users-tbody');
+            const row = document.createElement('tr');
+            row.setAttribute('data-user-id', user.id);
+            
+            let roleClass = user.is_admin === 1 ? 'admin' : 'user';
+            let roleText = user.is_admin === 1 ? 'Admin' : 'User';
+            
+            let statusClass = user.is_banned === 1 ? 'banned' : 'active';
+            let statusText = user.is_banned === 1 ? 'Banned' : 'Active';
+            
+            let actionButtons = '';
+            if (user.is_admin !== 1) {  // Don't show ban/unban buttons for admins
+                if (user.is_banned === 0) {
+                    actionButtons = `
+                        <div class="action-buttons">
+                            <button class="btn btn-warning ban-btn" data-id="${user.id}" data-email="${user.email}">Ban</button>
+                        </div>
+                    `;
+                } else {
+                    actionButtons = `
+                        <div class="action-buttons">
+                            <button class="btn btn-success unban-btn" data-id="${user.id}" data-email="${user.email}">Unban</button>
+                        </div>
+                    `;
+                }
+            }
+            
+            row.innerHTML = `
+                <td>${user.id}</td>
+                <td>${user.email}</td>
+                <td><span class="status-badge ${roleClass}">${roleText}</span></td>
+                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                <td>${actionButtons}</td>
+            `;
+            
+            tbody.insertBefore(row, tbody.firstChild);
+            
+            // Add event listeners to ban/unban buttons
+            const banBtn = row.querySelector('.ban-btn');
+            if (banBtn) {
+                banBtn.addEventListener('click', () => {
+                    if (confirm(`Are you sure you want to ban ${banBtn.getAttribute('data-email')}?`)) {
+                        banUser(banBtn.getAttribute('data-id'));
+                    }
+                });
+            }
+            
+            const unbanBtn = row.querySelector('.unban-btn');
+            if (unbanBtn) {
+                unbanBtn.addEventListener('click', () => {
+                    unbanUser(unbanBtn.getAttribute('data-id'));
+                });
+            }
+        }
+
+        // Update user in table
+        function updateUserInTable(user, action) {
+            const row = document.querySelector(`[data-user-id="${user.id}"]`);
+            if (row) {
+                const statusCell = row.querySelectorAll('.status-badge')[1];
+                const actionCell = row.querySelector('td:last-child');
+                
+                statusCell.className = `status-badge ${user.is_banned === 1 ? 'banned' : 'active'}`;
+                statusCell.textContent = user.is_banned === 1 ? 'Banned' : 'Active';
+                
+                if (user.is_admin !== 1) {  // Don't show ban/unban buttons for admins
+                    if (user.is_banned === 0) {
+                        actionCell.innerHTML = `
+                            <div class="action-buttons">
+                                <button class="btn btn-warning ban-btn" data-id="${user.id}" data-email="${user.email}">Ban</button>
+                            </div>
+                        `;
+                        
+                        // Add event listener to new ban button
+                        const banBtn = actionCell.querySelector('.ban-btn');
+                        banBtn.addEventListener('click', () => {
+                            if (confirm(`Are you sure you want to ban ${banBtn.getAttribute('data-email')}?`)) {
+                                banUser(banBtn.getAttribute('data-id'));
+                            }
+                        });
+                    } else {
+                        actionCell.innerHTML = `
+                            <div class="action-buttons">
+                                <button class="btn btn-success unban-btn" data-id="${user.id}" data-email="${user.email}">Unban</button>
+                            </div>
+                        `;
+                        
+                        // Add event listener to new unban button
+                        const unbanBtn = actionCell.querySelector('.unban-btn');
+                        unbanBtn.addEventListener('click', () => {
+                            unbanUser(unbanBtn.getAttribute('data-id'));
+                        });
+                    }
+                }
+                
+                // Add highlight animation
+                row.classList.add('updated-purchase');
+                setTimeout(() => {
+                    row.classList.remove('updated-purchase');
+                }, 2000);
+            }
+        }
+
+        // Load admins into admin table
+        function loadAdminsIntoTable(admins) {
+            const tbody = document.getElementById('admin-admins-tbody');
+            tbody.innerHTML = '';
+            
+            admins.forEach(admin => {
+                addAdminRow(admin);
+            });
+        }
+
+        // Add admin row to admin table
+        function addAdminRow(admin) {
+            const tbody = document.getElementById('admin-admins-tbody');
+            const row = document.createElement('tr');
+            row.setAttribute('data-admin-id', admin.id);
+            
+            let statusClass = admin.is_banned === 1 ? 'banned' : 'active';
+            let statusText = admin.is_banned === 1 ? 'Banned' : 'Active';
+            
+            let actionButtons = '';
+            // Don't allow deleting yourself
+            if (admin.id !== currentUser.id) {
+                actionButtons = `
+                    <div class="action-buttons">
+                        <button class="btn btn-danger delete-admin-btn" data-id="${admin.id}" data-email="${admin.email}">Delete</button>
+                    </div>
+                `;
+            } else {
+                actionButtons = `<span style="color: var(--dark-gray); font-size: 12px;">Current User</span>`;
+            }
+            
+            row.innerHTML = `
+                <td>${admin.id}</td>
+                <td>${admin.email}</td>
+                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                <td>${actionButtons}</td>
+            `;
+            
+            tbody.insertBefore(row, tbody.firstChild);
+            
+            // Add event listener to delete button
+            const deleteBtn = row.querySelector('.delete-admin-btn');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', () => {
+                    if (confirm(`Are you sure you want to delete admin ${deleteBtn.getAttribute('data-email')}?`)) {
+                        deleteAdmin(deleteBtn.getAttribute('data-id'));
+                    }
+                });
+            }
+        }
+
+        // Add new admin to table
+        function addNewAdminToTable(admin) {
+            const tbody = document.getElementById('admin-admins-tbody');
+            const row = document.createElement('tr');
+            row.setAttribute('data-admin-id', admin.id);
+            row.className = 'new-purchase';
+            
+            row.innerHTML = `
+                <td>${admin.id}</td>
+                <td>${admin.email}</td>
+                <td><span class="status-badge active">Active</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn btn-danger delete-admin-btn" data-id="${admin.id}" data-email="${admin.email}">Delete</button>
+                    </div>
+                </td>
+            `;
+            
+            tbody.insertBefore(row, tbody.firstChild);
+            
+            // Add event listener
+            row.querySelector('.delete-admin-btn').addEventListener('click', () => {
+                if (confirm(`Are you sure you want to delete admin ${row.querySelector('.delete-admin-btn').getAttribute('data-email')}?`)) {
+                    deleteAdmin(row.querySelector('.delete-admin-btn').getAttribute('data-id'));
+                }
+            });
+        }
+
+        // Remove admin from table
+        function removeAdminFromTable(adminId) {
+            const row = document.querySelector(`[data-admin-id="${adminId}"]`);
+            if (row) {
+                row.remove();
             }
         }
 
@@ -4084,6 +4611,126 @@
             }
         }
 
+        // Ban user
+        async function banUser(userId) {
+            if (isProcessing) return;
+            isProcessing = true;
+            
+            try {
+                const response = await fetch(`/admin/users/ban/${userId}`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    // Socket.IO will handle the UI update
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            } catch (error) {
+                showNotification('An error occurred. Please try again.', 'error');
+                console.error('Ban user error:', error);
+            } finally {
+                isProcessing = false;
+            }
+        }
+
+        // Unban user
+        async function unbanUser(userId) {
+            if (isProcessing) return;
+            isProcessing = true;
+            
+            try {
+                const response = await fetch(`/admin/users/unban/${userId}`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    // Socket.IO will handle the UI update
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            } catch (error) {
+                showNotification('An error occurred. Please try again.', 'error');
+                console.error('Unban user error:', error);
+            } finally {
+                isProcessing = false;
+            }
+        }
+
+        // Create admin
+        async function createAdmin() {
+            if (isProcessing) return;
+            isProcessing = true;
+            
+            const email = document.getElementById('new-admin-email').value;
+            const password = document.getElementById('new-admin-password').value;
+            const submitBtn = document.querySelector('#create-admin-form-element button[type="submit"]');
+            
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="loading"></span> Creating...';
+                
+                const formData = new FormData();
+                formData.append('email', email);
+                formData.append('password', password);
+
+                const response = await fetch('/admin/admins/create', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    adminManagementModal.style.display = 'none';
+                    document.getElementById('create-admin-form-element').reset();
+                    // Socket.IO will handle the UI update
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            } catch (error) {
+                showNotification('An error occurred. Please try again.', 'error');
+                console.error('Create admin error:', error);
+            } finally {
+                isProcessing = false;
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Admin';
+            }
+        }
+
+        // Delete admin
+        async function deleteAdmin(adminId) {
+            if (isProcessing) return;
+            isProcessing = true;
+            
+            try {
+                const response = await fetch(`/admin/admins/delete/${adminId}`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    // Socket.IO will handle the UI update
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            } catch (error) {
+                showNotification('An error occurred. Please try again.', 'error');
+                console.error('Delete admin error:', error);
+            } finally {
+                isProcessing = false;
+            }
+        }
+
         async function approvePurchase(purchaseId) {
             if (isProcessing) return;
             isProcessing = true;
@@ -4196,7 +4843,8 @@
                     currentUser = {
                         id: data.user_id,
                         email: data.email,
-                        is_admin: data.is_admin
+                        is_admin: data.is_admin,
+                        is_banned: data.is_banned
                     };
                     updateUI();
                     
