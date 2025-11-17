@@ -15,6 +15,9 @@ import requests
 import secrets
 from urllib.parse import urlencode
 from werkzeug.middleware.proxy_fix import ProxyFix
+import eventlet
+eventlet.monkey_patch()
+
 app = Flask(__name__)
 app.secret_key = 'japanese_learning_secret_key_change_in_production'  # Change this in production
 # Configure session for better compatibility
