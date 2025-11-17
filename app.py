@@ -1508,5 +1508,6 @@ def delete_admin(admin_id):
         logger.error(f"Delete admin error: {e}")
         conn.close()
         return jsonify({'success': False, 'message': 'Failed to delete admin'})
-if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=7777, debug=True)
+if __name__ == "__main__":
+    from eventlet import wsgi
+    wsgi.server(eventlet.listen(("0.0.0.0", 7777)), app)
