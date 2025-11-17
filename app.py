@@ -15,9 +15,6 @@ import requests
 import secrets
 from urllib.parse import urlencode
 from werkzeug.middleware.proxy_fix import ProxyFix
-import eventlet
-eventlet.monkey_patch()
-
 app = Flask(__name__)
 app.secret_key = 'japanese_learning_secret_key_change_in_production'  # Change this in production
 # Configure session for better compatibility
@@ -1511,6 +1508,5 @@ def delete_admin(admin_id):
         logger.error(f"Delete admin error: {e}")
         conn.close()
         return jsonify({'success': False, 'message': 'Failed to delete admin'})
-if __name__ == "__main__":
-    from eventlet import wsgi
-    wsgi.server(eventlet.listen(("0.0.0.0", 7777)), app)
+if __name__ == '__main__':
+    socketio.run(app, host='0.0.0.0', port=7777, debug=True)
