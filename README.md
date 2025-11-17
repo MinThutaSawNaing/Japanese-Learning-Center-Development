@@ -1,88 +1,55 @@
-Han Nay Japanese Language Center
-A modern Japanese learning platform with course management, payment integration, and real-time communication.
 
-🚀 Features
-Student Features:
 
-N5 to N1 Japanese courses
+# Japanese Learning Center
 
-KBZ Pay QR code payments
+A Flask-based web application for managing Japanese language courses, user registrations, and online payments.
 
-Interactive quizzes & progress tracking
+## Features
 
-Support system (technical & teacher Q&A)
+- User authentication (email/password and Google OAuth)
+- Course purchasing system (N5-N1 levels)
+- Support and teacher messaging
+- Admin dashboard for managing users and purchases
+- KBZ Pay payment integration
 
-Real-time notifications
+## Setup
 
-Admin Features:
+### Local Development
 
-Dashboard for purchase approvals
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Run the application:
+   ```bash
+   python app.py
+   ```
+4. Access at `http://localhost:7777`
 
-User management & moderation
+### Docker Deployment
 
-Message handling system
+1. Build the image:
+   ```bash
+   docker build -t japan .
+   ```
+2. Run the container:
+   ```bash
+   docker run -p 7777:7777 japan
+   ```
+3. Access at `http://localhost:7777`
 
-Admin account management
+## Default Admin
 
-Live updates via Socket.IO
+- Email: `admin@example.com`
+- Password: `admin123`
 
-🛠 Tech Stack
-Frontend: HTML5, CSS3, JavaScript
+## Configuration
 
-Real-time: Socket.IO
+- Change `app.secret_key` in production
+- Configure Google OAuth in `google_credentials.json`
+- Update payment details in course content
 
-UI: Font Awesome, Google Fonts
+## License
 
-Design: Responsive, mobile-first
-
-📦 Quick Start
-Setup Backend (required for full functionality)
-
-File Structure:
-
-text
-project/
-├── main.html
-└── static/
-    └── images/
-        ├── icon.png
-        ├── logohn.jpg
-        ├── hero.jpg
-        └── kpay.jpg
-Backend Requirements:
-
-User authentication (/login, /register)
-
-Course management (/courses)
-
-Payment processing (/purchase/{level})
-
-Support system endpoints
-
-Socket.IO event handlers
-
-🎯 Usage
-Students:
-
-Register/Login → Browse Courses → Purchase via KBZ Pay → Access Materials
-
-Admins:
-
-Admin Login → Dashboard → Manage Purchases → Handle Messages
-
-🔧 Key Endpoints
-text
-/auth          → Login, Register, Logout
-/courses       → Course listings
-/purchase      → Payment processing
-/support       → Student inquiries
-/admin/*       → Admin operations
-/socket.io     → Real-time features
-📱 Compatibility
-Fully responsive design for:
-
-Desktop
-
-Tablet
-
-Mobile
+MIT License
