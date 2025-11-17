@@ -118,11 +118,11 @@
       }
 
       .facebook-btn svg path {
-          fill: #1877F2;
+        fill: #1877f2;
       }
 
       .facebook-btn span {
-          color: #1877F2;
+        color: #1877f2;
       }
 
       .header-content {
@@ -1921,7 +1921,7 @@
                 Login
               </button>
             </form>
-            <button class="btn-165">
+            <button class="btn-165" id="google-signin-btn">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 262">
                 <path
                   fill="#4285F4"
@@ -3448,6 +3448,82 @@
         setTimeout(() => {
           notification.classList.remove("show");
         }, duration);
+      }
+      // Add this function in your JavaScript section
+      function handleGoogleAuthResponse() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get("code");
+        const error = urlParams.get("error");
+
+        if (error) {
+          showNotification("Google login was cancelled", "warning");
+          // Clean URL
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+          );
+          return;
+        }
+
+        if (code) {
+          // Show loading
+          showNotification("Completing Google login...", "info");
+
+          // Make an AJAX request with proper headers
+          fetch("/login/google/authorized/" + window.location.search, {
+            method: "GET",
+            headers: {
+              "X-Requested-With": "XMLHttpRequest",
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                currentUser = {
+                  id: data.user_id,
+                  email: data.email,
+                  is_admin: data.is_admin,
+                };
+                updateUI();
+                showNotification(data.message, "success");
+
+                // Join appropriate room via Socket.IO
+                if (socket) {
+                  if (data.is_admin) {
+                    socket.emit("join_admin_room");
+                    showSection("admin-dashboard");
+                    loadAdminDashboard();
+                  } else {
+                    socket.emit("join_user_room", { user_id: data.user_id });
+                    showSection("home");
+                  }
+                }
+              } else {
+                showNotification(data.message, "error");
+                showSection("auth");
+                showLoginForm();
+              }
+
+              // Clean URL
+              window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+              );
+            })
+            .catch((error) => {
+              console.error("Google auth error:", error);
+              showNotification("Google login failed", "error");
+              showSection("auth");
+              showLoginForm();
+              window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+              );
+            });
+        }
       }
 
       function updateUI() {
@@ -5459,11 +5535,13 @@
           return { logged_in: false };
         }
       }
-
       // Initialize the app
       document.addEventListener("DOMContentLoaded", () => {
         // Initialize Socket.IO
         initializeSocket();
+
+        // Check for Google OAuth response
+        handleGoogleAuthResponse();
 
         // Load initial CAPTCHA
         loadCaptcha();
@@ -5501,6 +5579,27 @@
           showSection("home");
         }
       });
+      // Google Sign-In button
+      document
+        .getElementById("google-signin-btn")
+        .addEventListener("click", () => {
+          // Clear any existing OAuth state in session
+          fetch("/clear/oauth/state", {
+            method: "POST",
+            headers: {
+              "X-Requested-With": "XMLHttpRequest",
+            },
+          })
+            .then(() => {
+              // Proceed with Google OAuth
+              window.location.href = "/login/google";
+            })
+            .catch((error) => {
+              console.error("Error clearing OAuth state:", error);
+              // Proceed anyway
+              window.location.href = "/login/google";
+            });
+        });
     </script>
   </body>
 </html>
