@@ -1,5 +1,6 @@
 import sqlite3
 import os
+from datetime import datetime, timedelta 
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
@@ -9,9 +10,21 @@ import random
 import string
 from flask_socketio import SocketIO, emit, join_room, leave_room, disconnect
 import logging
-
+import json
+import requests
+import secrets
+from urllib.parse import urlencode
+from werkzeug.middleware.proxy_fix import ProxyFix
 app = Flask(__name__)
 app.secret_key = 'japanese_learning_secret_key_change_in_production'  # Change this in production
+# Configure session for better compatibility
+app.config['SESSION_COOKIE_SECURE'] = True  # For HTTPS
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
+# Session expires after 30 minute
+app.config['SESSION_TYPE'] = 'filesystem'
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -175,7 +188,14 @@ def admin_required(f):
             return jsonify({'success': False, 'message': 'Admin access required'})
         return f(*args, **kwargs)
     return decorated_function
+def load_google_credentials():
+    try:
+        with open('google_credentials.json', 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return None
 
+google_creds = load_google_credentials()
 # Socket.IO event handlers
 @socketio.on('connect')
 def handle_connect():
@@ -323,7 +343,149 @@ def register():
         logger.error(f"Registration error: {e}")
         conn.close()
         return jsonify({'success': False, 'message': 'Registration failed'})
+@app.route('/login/google')
+def login_google():
+    if not google_creds:
+        return jsonify({'success': False, 'message': 'Google OAuth not configured'})
+    
+    # Generate state for security
+    state = secrets.token_urlsafe(16)
+    session['oauth_state'] = state
+    session.permanent = True  # Make session persistent
+    
+    # Force session to be saved
+    session.modified = True
+    
+    # Build authorization URL
+    params = {
+        'client_id': google_creds['web']['client_id'],
+        'redirect_uri': "https://hannayjapaneselanguagecenter.online/login/google/authorized/",
+        'response_type': 'code',
+        'scope': 'openid email profile',
+        'state': state,
+        'access_type': 'offline'
+    }
+    
+    auth_url = f"{google_creds['web']['auth_uri']}?{urlencode(params)}"
+    print(f"DEBUG: Generated state: {state}")  # Debug line
+    return redirect(auth_url)
 
+@app.route('/clear/oauth/state', methods=['POST'])
+def clear_oauth_state():
+    session.pop('oauth_state', None)
+    return jsonify({'success': True})
+
+@app.route('/login/google/authorized/')
+def google_authorized():
+    # Get authorization code and state
+    code = request.args.get('code')
+    state = request.args.get('state')
+    
+    # Check if this is an API call (has X-Requested-With header)
+    is_api_call = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+    
+    print(f"DEBUG: Received state: {state}")  # Debug line
+    print(f"DEBUG: Session state: {session.get('oauth_state')}")  # Debug line
+    
+    if not code:
+        if is_api_call:
+            return jsonify({'success': False, 'message': 'Authorization failed'})
+        return redirect('/#auth?error=authorization_failed')
+    
+    # For debugging, let's check if state exists in session
+    if 'oauth_state' not in session:
+        print("DEBUG: oauth_state not in session!")  # Debug line
+        if is_api_call:
+            return jsonify({'success': False, 'message': 'Session expired'})
+        return redirect('/#auth?error=session_expired')
+    
+    # Verify state
+    if state != session.get('oauth_state'):
+        print("DEBUG: State mismatch!")  # Debug line
+        if is_api_call:
+            return jsonify({'success': False, 'message': 'Invalid state parameter'})
+        return jsonify({'success': False, 'message': 'Invalid state parameter'})
+    
+    # Exchange code for tokens
+    token_data = {
+        'code': code,
+        'client_id': google_creds['web']['client_id'],
+        'client_secret': google_creds['web']['client_secret'],
+        'redirect_uri': "https://hannayjapaneselanguagecenter.online/login/google/authorized/",
+        'grant_type': 'authorization_code'
+    }
+    
+    try:
+        response = requests.post(google_creds['web']['token_uri'], data=token_data)
+        token_info = response.json()
+        
+        if 'error' in token_info:
+            print(f"DEBUG: Token error: {token_info}")  # Debug line
+            if is_api_call:
+                return jsonify({'success': False, 'message': 'Token exchange failed'})
+            return redirect('/#auth?error=token_exchange_failed')
+        
+        # Get user info
+        headers = {'Authorization': f"Bearer {token_info['access_token']}"}
+        user_response = requests.get('https://www.googleapis.com/oauth2/v2/userinfo', headers=headers)
+        user_info = user_response.json()
+        
+        # Check if user exists in database
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        cursor.execute('SELECT * FROM users WHERE email = ?', (user_info['email'],))
+        user = cursor.fetchone()
+        
+        if user:
+            # Check if user is banned
+            if user['is_banned'] == 1:
+                conn.close()
+                if is_api_call:
+                    return jsonify({'success': False, 'message': 'Account banned'})
+                return redirect('/#auth?error=account_banned')
+            
+            # Log in existing user
+            session['user_id'] = user['id']
+            session['is_admin'] = user['is_admin']
+            user_id = user['id']
+            is_admin = user['is_admin']
+            email = user['email']
+        else:
+            # Create new user
+            cursor.execute('INSERT INTO users (email, password_hash) VALUES (?, ?)', 
+                         (user_info['email'], generate_password_hash('google_oauth_user')))
+            conn.commit()
+            
+            user_id = cursor.lastrowid
+            session['user_id'] = user_id
+            session['is_admin'] = 0
+            is_admin = 0
+            email = user_info['email']
+        
+        conn.close()
+        
+        # Clear OAuth state from session
+        session.pop('oauth_state', None)
+        
+        # Return appropriate response based on request type
+        if is_api_call:
+            return jsonify({
+                'success': True, 
+                'message': 'Login successful', 
+                'user_id': user_id,
+                'is_admin': is_admin,
+                'email': email
+            })
+        else:
+            # For direct browser access, redirect to home page
+            return redirect('/')
+        
+    except Exception as e:
+        logger.error(f"Google OAuth error: {e}")
+        if is_api_call:
+            return jsonify({'success': False, 'message': 'Login failed'})
+        return redirect('/#auth?error=login_failed')
 @app.route('/login', methods=['POST'])
 def login():
     email = request.form.get('email')
