@@ -1416,7 +1416,6 @@ def unban_user(user_id):
         conn.close()
         return jsonify({'success': False, 'message': 'Failed to unban user'})
 
-# Admin Management Routes
 @app.route('/admin/admins/create', methods=['POST'])
 @admin_required
 def create_admin():
@@ -1434,31 +1433,35 @@ def create_admin():
         cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
         if cursor.fetchone():
             conn.close()
-            return jsonify({'success': False, 'message': 'User with this email already exists'})
+            return jsonify({'success': False, 'message': 'Email already exists'})
         
         # Create new admin user
         password_hash = generate_password_hash(password)
         cursor.execute('INSERT INTO users (email, password_hash, is_admin) VALUES (?, ?, ?)', 
-                      (email, password_hash, 1))
+                     (email, password_hash, 1))
         conn.commit()
         
         # Get the new admin's ID
         admin_id = cursor.lastrowid
         
-        # Get new admin data
+        # Get admin details for response
         cursor.execute('SELECT id, email, is_admin, is_banned FROM users WHERE id = ?', (admin_id,))
-        new_admin = dict(cursor.fetchone())
+        admin_data = cursor.fetchone()
         
         conn.close()
         
+        # Prepare admin data for notification
+        admin_dict = dict(admin_data)
+        
         # Emit real-time notification to admin room
-        socketio.emit('admin_created', {
-            'admin': new_admin
-        }, room='admin')
+        socketio.emit('admin_created', {'admin': admin_dict}, room='admin')
+        logger.info(f"New admin created: {email}")
         
-        logger.info(f"New admin created: {email} (ID: {admin_id})")
-        
-        return jsonify({'success': True, 'message': 'Admin created successfully'})
+        return jsonify({
+            'success': True, 
+            'message': 'Admin created successfully',
+            'admin': admin_dict
+        })
         
     except Exception as e:
         logger.error(f"Create admin error: {e}")
@@ -1472,11 +1475,6 @@ def delete_admin(admin_id):
     cursor = conn.cursor()
     
     try:
-        # Don't allow deleting yourself
-        if admin_id == session['user_id']:
-            conn.close()
-            return jsonify({'success': False, 'message': 'Cannot delete your own account'})
-        
         # Get admin details before deleting
         cursor.execute('SELECT email FROM users WHERE id = ? AND is_admin = 1', (admin_id,))
         admin_data = cursor.fetchone()
@@ -1485,8 +1483,13 @@ def delete_admin(admin_id):
             conn.close()
             return jsonify({'success': False, 'message': 'Admin not found'})
         
-        # Delete admin
-        cursor.execute('DELETE FROM users WHERE id = ?', (admin_id,))
+        # Don't allow deleting yourself
+        if admin_id == session['user_id']:
+            conn.close()
+            return jsonify({'success': False, 'message': 'Cannot delete your own account'})
+        
+        # Delete admin (set is_admin to 0 instead of deleting to preserve data)
+        cursor.execute('UPDATE users SET is_admin = 0 WHERE id = ?', (admin_id,))
         conn.commit()
         
         conn.close()
