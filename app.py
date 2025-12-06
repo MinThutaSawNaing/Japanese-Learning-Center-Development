@@ -1509,4 +1509,4 @@ def delete_admin(admin_id):
         conn.close()
         return jsonify({'success': False, 'message': 'Failed to delete admin'})
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=7777, debug=True)
+    socketio.run(app, host='0.0.0.0', port=7777, debug=False)
