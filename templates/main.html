@@ -53,87 +53,35 @@
         overflow-x: hidden;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        /* Padding to prevent content from being hidden under the bottom nav on mobile */
+        padding-bottom: calc(70px + env(safe-area-inset-bottom));
       }
 
       .container {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 0 20px;
+        padding: 0 15px; /* More horizontal padding for mobile */
       }
 
+      /* --- Header & Desktop Navigation --- */
       header {
         background-color: var(--white);
-        box-shadow: var(--shadow-md);
-        padding: 15px 0;
+        box-shadow: var(--shadow-sm);
+        padding: 10px 0;
         position: sticky;
         top: 0;
         z-index: 100;
         transition: all 0.3s ease;
       }
 
-      .btn-165 {
-        padding: 10px 25px;
-        font-size: 14px;
-        font-weight: 700;
-        text-align: center;
-        vertical-align: middle;
-        border-radius: 0.5rem;
-        border: 1px solid #bebebe;
-        gap: 10px;
-        color: #414141;
-        background: #fff;
-        font-family: Arial, Helvetica, sans-serif;
-        cursor: pointer;
-        text-decoration: none;
-        user-select: none;
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        margin-top: 10px;
-        /*** full width block ***/
-        /* width: 100%; */
-      }
-
-      .btn-165 svg {
-        height: 24px;
-      }
-
-      .btn-165:hover {
-        border: solid 1px #464545;
-      }
-
-      .btn-165:active {
-        margin-top: 1px;
-      }
-
-      /*** disabled style ***/
-      .btn-165:disabled {
-        pointer-events: none;
-        opacity: 0.65;
-        color: #7e7e7e;
-        background: #dcdcdc;
-        box-shadow: none;
-        text-shadow: none;
-      }
-
-      .facebook-btn svg path {
-        fill: #1877f2;
-      }
-
-      .facebook-btn span {
-        color: #1877f2;
-      }
-
       .header-content {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        position: relative;
       }
 
       .logo {
-        font-size: 24px;
+        font-size: 20px; /* Smaller font for mobile */
         font-weight: 700;
         color: var(--primary-color);
         display: flex;
@@ -141,13 +89,9 @@
         transition: transform 0.3s ease;
       }
 
-      .logo:hover {
-        transform: scale(1.05);
-      }
-
       .logo span {
-        font-size: 28px;
-        margin-right: 10px;
+        font-size: 24px;
+        margin-right: 8px;
         background: var(--gradient-primary);
         background-clip: text;
         -webkit-background-clip: text;
@@ -155,14 +99,13 @@
       }
 
       .logo img {
-        margin-right: 10px;
-        height: 60px;
+        margin-right: 8px;
+        height: 45px; /* Smaller logo for mobile */
         width: auto;
       }
 
       nav {
-        display: flex;
-        align-items: center;
+        display: none; /* Hidden by default, shown on desktop */
       }
 
       nav ul {
@@ -205,21 +148,102 @@
         width: 100%;
       }
 
-      .mobile-menu-toggle {
-        display: none;
-        background: none;
-        border: none;
-        font-size: 24px;
-        color: var(--primary-color);
-        cursor: pointer;
-        padding: 5px;
-        z-index: 2001;
-        position: relative;
+      /* --- Main Content --- */
+      main {
+        padding-top: 20px;
       }
 
+      .section {
+        margin: 30px 0;
+        animation: fadeIn 0.8s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .section-title {
+        font-size: 24px; /* Smaller for mobile */
+        margin-bottom: 20px;
+        color: var(--primary-color);
+        text-align: center;
+        position: relative;
+        font-weight: 700;
+      }
+
+      .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 4px;
+        background: var(--gradient-primary);
+        border-radius: 2px;
+      }
+
+      /* --- Mobile Bottom Navigation --- */
+      .mobile-bottom-nav {
+        display: flex; /* Visible by default on mobile */
+        justify-content: space-around;
+        align-items: center;
+        background-color: var(--white);
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        padding: 8px 0; /* Standard padding for top, left, right */
+        padding-bottom: max(15px, env(safe-area-inset-bottom));
+      }
+
+      .mobile-bottom-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--dark-gray);
+        text-decoration: none;
+        font-size: 11px;
+        font-weight: 500;
+        transition: color 0.3s ease;
+        padding: 5px;
+        min-width: 50px;
+      }
+
+      .mobile-bottom-nav-item i {
+        font-size: 20px;
+        margin-bottom: 4px;
+      }
+
+      .mobile-bottom-nav-item.active {
+        color: var(--primary-color);
+      }
+
+      .mobile-bottom-nav-item .notification-indicator {
+        position: absolute;
+        top: 5px;
+        right: 10px;
+        width: 8px;
+        height: 8px;
+        background-color: var(--danger-color);
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+
+      /* --- Shared Component Styles --- */
       .btn {
         display: inline-block;
-        padding: 12px 24px;
+        padding: 12px 20px; /* Slightly smaller padding */
         background: var(--gradient-primary);
         color: white;
         border: none;
@@ -233,7 +257,7 @@
         overflow: hidden;
         z-index: 1;
         font-size: 16px;
-        min-height: 48px;
+        min-height: 48px; /* Ensure good tap target size */
       }
 
       .btn::before {
@@ -322,62 +346,55 @@
         box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
       }
 
-      .section {
-        margin: 40px 0;
-        animation: fadeIn 0.8s ease;
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .section-title {
-        font-size: 28px;
-        margin-bottom: 25px;
-        color: var(--primary-color);
-        text-align: center;
-        position: relative;
+      .btn-165 {
+        padding: 10px 25px;
+        font-size: 14px;
         font-weight: 700;
-      }
-
-      .section-title::after {
-        content: "";
-        position: absolute;
-        bottom: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60px;
-        height: 4px;
-        background: var(--gradient-primary);
-        border-radius: 2px;
-      }
-
-      .auth-container {
-        max-width: 450px;
-        margin: 0 auto;
-        background-color: var(--white);
-        padding: 30px;
-        border-radius: 15px;
-        box-shadow: var(--shadow-xl);
-        position: relative;
-        overflow: hidden;
-      }
-
-      .auth-container::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
+        text-align: center;
+        vertical-align: middle;
+        border-radius: 0.5rem;
+        border: 1px solid #bebebe;
+        gap: 10px;
+        color: #414141;
+        background: #fff;
+        font-family: Arial, Helvetica, sans-serif;
+        cursor: pointer;
+        text-decoration: none;
+        user-select: none;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
         width: 100%;
-        height: 5px;
-        background: var(--gradient-primary);
+        margin-top: 10px;
+      }
+
+      .btn-165 svg {
+        height: 24px;
+      }
+
+      .btn-165:hover {
+        border: solid 1px #464545;
+      }
+
+      .btn-165:active {
+        margin-top: 1px;
+      }
+
+      .btn-165:disabled {
+        pointer-events: none;
+        opacity: 0.65;
+        color: #7e7e7e;
+        background: #dcdcdc;
+        box-shadow: none;
+        text-shadow: none;
+      }
+
+      .facebook-btn svg path {
+        fill: #1877f2;
+      }
+
+      .facebook-btn span {
+        color: #1877f2;
       }
 
       .form-group {
@@ -448,6 +465,126 @@
         transform: rotate(90deg);
       }
 
+      /* --- Section Specific Styles --- */
+      .hero {
+        background: linear-gradient(
+            135deg,
+            rgba(70, 246, 213, 0.2) 0%,
+            rgba(58, 212, 226, 0.1) 100%
+          ),
+          url("static/images/hero.jpg") center/cover;
+        padding: 40px 0; /* Less padding on mobile */
+        text-align: center;
+        margin-bottom: 30px;
+        border-radius: 0 0 20px 20px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(
+          circle at 10% 20%,
+          rgba(255, 255, 255, 0.1) 0%,
+          rgba(255, 255, 255, 0) 90%
+        );
+      }
+
+      .hero h1 {
+        font-size: 28px; /* Smaller for mobile */
+        margin-bottom: 15px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero p {
+        font-size: 15px;
+        max-width: 800px;
+        margin: 0 auto 25px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: 1fr; /* Single column on mobile */
+        gap: 15px;
+        margin: 40px 0;
+      }
+
+      .feature {
+        text-align: center;
+        background-color: var(--white);
+        padding: 25px 15px;
+        border-radius: 15px;
+        box-shadow: var(--shadow-md);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .feature::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: var(--gradient-primary);
+      }
+
+      .feature:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+      }
+
+      .feature-icon {
+        font-size: 35px;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+        display: inline-block;
+        padding: 12px;
+        border-radius: 50%;
+        background-color: rgba(231, 76, 60, 0.1);
+      }
+
+      .feature h3 {
+        margin-bottom: 10px;
+        color: var(--text-color);
+        font-size: 16px;
+      }
+
+      .feature p {
+        font-size: 13px;
+      }
+
+      .auth-container {
+        max-width: 450px;
+        margin: 0 auto;
+        background-color: var(--white);
+        padding: 30px 20px; /* More padding on mobile */
+        border-radius: 15px;
+        box-shadow: var(--shadow-xl);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .auth-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: var(--gradient-primary);
+      }
+
       .form-toggle {
         text-align: center;
         margin-top: 20px;
@@ -466,8 +603,8 @@
 
       .courses-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 20px;
+        grid-template-columns: 1fr; /* Single column on mobile */
+        gap: 15px;
       }
 
       .course-card {
@@ -497,8 +634,8 @@
       .course-header {
         background: var(--gradient-primary);
         color: white;
-        padding: 20px;
-        font-size: 22px;
+        padding: 15px; /* Less padding on mobile */
+        font-size: 20px;
         font-weight: 700;
         text-align: center;
         position: relative;
@@ -518,14 +655,14 @@
       }
 
       .course-body {
-        padding: 30px 20px 20px;
+        padding: 25px 15px 15px; /* Adjusted padding */
       }
 
       .course-description {
         margin-bottom: 20px;
         color: var(--dark-gray);
         text-align: center;
-        font-size: 14px;
+        font-size: 13px;
       }
 
       .course-status {
@@ -596,14 +733,14 @@
       .modal-header {
         background: var(--gradient-primary);
         color: white;
-        padding: 20px;
+        padding: 15px 20px; /* Adjusted padding */
         display: flex;
         justify-content: space-between;
         align-items: center;
       }
 
       .modal-title {
-        font-size: 20px;
+        font-size: 18px; /* Smaller for mobile */
         font-weight: 600;
       }
 
@@ -628,7 +765,7 @@
       }
 
       .modal-body {
-        padding: 25px;
+        padding: 20px; /* Adjusted padding */
         max-height: calc(90vh - 80px);
         overflow-y: auto;
       }
@@ -642,7 +779,7 @@
       }
 
       .qr-container img {
-        max-width: 300px;
+        max-width: 250px; /* Smaller on mobile */
         height: auto;
         border-radius: 10px;
         box-shadow: var(--shadow-md);
@@ -708,19 +845,20 @@
         border-radius: 10px;
         overflow: hidden;
         box-shadow: var(--shadow-lg);
+        font-size: 12px; /* Smaller font for mobile */
       }
 
       .admin-table th,
       .admin-table td {
-        padding: 12px 10px;
+        padding: 10px 5px; /* Less padding on mobile */
         text-align: left;
-        font-size: 14px;
       }
 
       .admin-table th {
         background: var(--gradient-primary);
         color: white;
         font-weight: 600;
+        font-size: 13px;
       }
 
       .admin-table tr:nth-child(even) {
@@ -798,112 +936,14 @@
 
       .action-buttons {
         display: flex;
-        gap: 8px;
+        gap: 5px; /* Smaller gap on mobile */
         flex-wrap: wrap;
       }
 
       .action-buttons .btn {
-        padding: 8px 12px;
-        font-size: 12px;
+        padding: 6px 10px; /* Smaller buttons */
+        font-size: 11px;
         min-height: auto;
-      }
-
-      .hero {
-        background: linear-gradient(
-            135deg,
-            rgba(70, 246, 213, 0.2) 0%,
-            rgba(58, 212, 226, 0.1) 100%
-          ),
-          url("static/images/hero.jpg") center/cover;
-        padding: 60px 0;
-        text-align: center;
-        margin-bottom: 40px;
-        border-radius: 0 0 20px 20px;
-        color: white;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .hero::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(
-          circle at 10% 20%,
-          rgba(255, 255, 255, 0.1) 0%,
-          rgba(255, 255, 255, 0) 90%
-        );
-      }
-
-      .hero h1 {
-        font-size: 32px;
-        margin-bottom: 15px;
-        position: relative;
-        z-index: 1;
-      }
-
-      .hero p {
-        font-size: 16px;
-        max-width: 800px;
-        margin: 0 auto 25px;
-        position: relative;
-        z-index: 1;
-      }
-
-      .features {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-        margin: 40px 0;
-      }
-
-      .feature {
-        text-align: center;
-        background-color: var(--white);
-        padding: 25px 15px;
-        border-radius: 15px;
-        box-shadow: var(--shadow-md);
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .feature::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 5px;
-        background: var(--gradient-primary);
-      }
-
-      .feature:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--shadow-xl);
-      }
-
-      .feature-icon {
-        font-size: 40px;
-        color: var(--primary-color);
-        margin-bottom: 15px;
-        display: inline-block;
-        padding: 15px;
-        border-radius: 50%;
-        background-color: rgba(231, 76, 60, 0.1);
-      }
-
-      .feature h3 {
-        margin-bottom: 10px;
-        color: var(--text-color);
-        font-size: 18px;
-      }
-
-      .feature p {
-        font-size: 14px;
       }
 
       .quiz-container {
@@ -1011,7 +1051,7 @@
 
       .connection-status {
         position: fixed;
-        bottom: 20px;
+        bottom: 80px; /* Moved up to be above the bottom nav */
         left: 20px;
         padding: 8px 12px;
         border-radius: 20px;
@@ -1046,7 +1086,7 @@
       /* Support section styles */
       .support-options {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-template-columns: 1fr; /* Single column on mobile */
         gap: 20px;
         margin-bottom: 30px;
       }
@@ -1153,15 +1193,17 @@
         display: flex;
         margin-bottom: 20px;
         border-bottom: 2px solid var(--light-gray);
+        overflow-x: auto; /* Allow horizontal scrolling on small screens */
       }
 
       .tab {
-        padding: 10px 20px;
+        padding: 10px 15px; /* Adjusted padding */
         cursor: pointer;
         font-weight: 500;
         color: var(--dark-gray);
         transition: all 0.3s ease;
         position: relative;
+        white-space: nowrap; /* Prevent text wrapping */
       }
 
       .tab.active {
@@ -1206,13 +1248,13 @@
       .message-item.sent {
         background-color: var(--primary-color);
         color: white;
-        margin-left: 20%;
+        margin-left: 10%;
       }
 
       .message-item.received {
         background-color: var(--white);
         color: var(--text-color);
-        margin-right: 20%;
+        margin-right: 10%;
         border: 1px solid var(--light-gray);
       }
 
@@ -1284,19 +1326,6 @@
         justify-content: space-between;
         font-size: 12px;
         color: var(--dark-gray);
-      }
-
-      /* Notification indicator */
-      .notification-indicator {
-        display: none;
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        width: 10px;
-        height: 10px;
-        background-color: var(--danger-color);
-        border-radius: 50%;
-        animation: pulse 2s infinite;
       }
 
       /* Contact Us Modal */
@@ -1431,306 +1460,6 @@
         box-shadow: var(--shadow-md);
       }
 
-      /* Mobile-specific styles */
-      @media (max-width: 768px) {
-        .container {
-          padding: 0 15px;
-        }
-
-        .header-content {
-          flex-direction: row;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .mobile-menu-toggle {
-          display: block;
-        }
-
-        nav {
-          position: fixed;
-          top: 0;
-          left: -100%;
-          width: 80%;
-          height: 100vh;
-          background-color: var(--white);
-          box-shadow: var(--shadow-xl);
-          transition: left 0.3s ease;
-          z-index: 1000;
-          overflow-y: auto;
-        }
-
-        nav.active {
-          left: 0;
-        }
-
-        nav ul {
-          flex-direction: column;
-          padding: 70px 20px 20px;
-          width: 100%;
-        }
-
-        nav ul li {
-          margin: 0 0 20px 0;
-          border-bottom: 1px solid var(--light-gray);
-          padding-bottom: 15px;
-        }
-
-        nav ul li:last-child {
-          border-bottom: none;
-          margin-bottom: 0;
-          padding-bottom: 0;
-        }
-
-        nav ul li a {
-          font-size: 18px;
-          padding: 10px 0;
-          display: block;
-        }
-
-        .logo {
-          font-size: 20px;
-        }
-
-        .logo img {
-          height: 50px;
-        }
-
-        .hero h1 {
-          font-size: 28px;
-        }
-
-        .hero p {
-          font-size: 15px;
-        }
-
-        .section-title {
-          font-size: 24px;
-        }
-
-        .courses-grid {
-          grid-template-columns: 1fr;
-          gap: 15px;
-        }
-
-        .course-header {
-          font-size: 20px;
-          padding: 15px;
-        }
-
-        .course-body {
-          padding: 25px 15px 15px;
-        }
-
-        .course-description {
-          font-size: 13px;
-        }
-
-        .modal-content {
-          width: 95%;
-          max-height: 95vh;
-        }
-
-        .modal-header {
-          padding: 15px;
-        }
-
-        .modal-title {
-          font-size: 18px;
-        }
-
-        .modal-body {
-          padding: 20px;
-        }
-
-        .notification {
-          font-size: 14px;
-          padding: 12px 15px;
-        }
-
-        .admin-table {
-          font-size: 12px;
-        }
-
-        .admin-table th,
-        .admin-table td {
-          padding: 8px 5px;
-        }
-
-        .action-buttons {
-          flex-direction: column;
-          gap: 5px;
-        }
-
-        .action-buttons .btn {
-          width: 100%;
-          padding: 8px 10px;
-        }
-
-        .status-badge {
-          font-size: 10px;
-          padding: 3px 6px;
-        }
-
-        .quiz-options {
-          grid-template-columns: 1fr;
-        }
-
-        .quiz-option {
-          padding: 12px;
-          font-size: 14px;
-        }
-
-        .feature {
-          padding: 20px 15px;
-        }
-
-        .feature-icon {
-          font-size: 35px;
-          padding: 12px;
-        }
-
-        .feature h3 {
-          font-size: 16px;
-        }
-
-        .feature p {
-          font-size: 13px;
-        }
-
-        .auth-container {
-          padding: 25px 20px;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-          padding: 12px;
-          font-size: 16px;
-        }
-
-        .btn {
-          padding: 12px 20px;
-          font-size: 16px;
-        }
-
-        .connection-status {
-          bottom: 15px;
-          left: 15px;
-          padding: 6px 10px;
-          font-size: 11px;
-        }
-
-        .support-options {
-          grid-template-columns: 1fr;
-        }
-
-        .message-item.sent {
-          margin-left: 10%;
-        }
-
-        .message-item.received {
-          margin-right: 10%;
-        }
-      }
-
-      /* Small mobile devices */
-      @media (max-width: 480px) {
-        .hero {
-          padding: 40px 0;
-        }
-
-        .hero h1 {
-          font-size: 24px;
-        }
-
-        .hero p {
-          font-size: 14px;
-        }
-
-        .section {
-          margin: 30px 0;
-        }
-
-        .section-title {
-          font-size: 22px;
-        }
-
-        .features {
-          grid-template-columns: 1fr;
-          gap: 15px;
-        }
-
-        .feature {
-          padding: 15px;
-        }
-
-        .feature-icon {
-          font-size: 30px;
-          padding: 10px;
-        }
-
-        .modal-body {
-          padding: 15px;
-        }
-
-        .qr-container img {
-          max-width: 200px;
-        }
-
-        .admin-table {
-          font-size: 11px;
-        }
-
-        .admin-table th,
-        .admin-table td {
-          padding: 6px 3px;
-        }
-
-        .action-buttons .btn {
-          padding: 6px 8px;
-          font-size: 11px;
-        }
-      }
-
-      /* Loading animation */
-      .loading {
-        display: inline-block;
-        width: 20px;
-        height: 20px;
-        border: 3px solid rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        border-top-color: white;
-        animation: spin 1s ease-in-out infinite;
-      }
-
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      /* Floating elements */
-      .floating {
-        animation: floating 3s ease-in-out infinite;
-      }
-
-      @keyframes floating {
-        0% {
-          transform: translateY(0px);
-        }
-        50% {
-          transform: translateY(-10px);
-        }
-        100% {
-          transform: translateY(0px);
-        }
-      }
-
-      /* Pulse animation */
-      .pulse {
-        animation: pulse 2s infinite;
-      }
       /* Footer Styles */
       .site-footer {
         background-color: var(--white);
@@ -1755,13 +1484,41 @@
         margin: 0;
       }
 
-      /* Mobile responsiveness for footer */
-      @media (max-width: 768px) {
-        .footer-content {
-          flex-direction: column;
-          gap: 15px;
-          text-align: center;
+      /* Animations */
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
         }
+      }
+
+      .floating {
+        animation: floating 3s ease-in-out infinite;
+      }
+
+      @keyframes floating {
+        0% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+        100% {
+          transform: translateY(0px);
+        }
+      }
+
+      .pulse {
+        animation: pulse 2s infinite;
       }
 
       @keyframes pulse {
@@ -1791,6 +1548,177 @@
         height: 40px;
         border-width: 4px;
       }
+
+      /* --- Desktop Styles (min-width: 769px) --- */
+      @media (min-width: 769px) {
+        body {
+          padding-bottom: 0; /* Remove bottom padding for desktop */
+        }
+
+        .container {
+          padding: 0 20px; /* Standard padding for desktop */
+        }
+
+        header {
+          padding: 15px 0;
+        }
+
+        .logo {
+          font-size: 24px;
+        }
+
+        .logo span {
+          font-size: 28px;
+          margin-right: 10px;
+        }
+
+        .logo img {
+          height: 60px;
+          width: auto;
+          margin-right: 10px;
+        }
+
+        nav {
+          display: flex; /* Show desktop nav */
+        }
+
+        .mobile-bottom-nav {
+          display: none; /* Hide mobile nav */
+        }
+
+        main {
+          padding-top: 0;
+        }
+
+        .hero {
+          padding: 60px 0;
+        }
+
+        .hero h1 {
+          font-size: 32px;
+        }
+
+        .hero p {
+          font-size: 16px;
+        }
+
+        .section-title {
+          font-size: 28px;
+        }
+
+        .features {
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 20px;
+        }
+
+        .feature {
+          padding: 25px 15px;
+        }
+
+        .feature-icon {
+          font-size: 40px;
+          padding: 15px;
+        }
+
+        .feature h3 {
+          font-size: 18px;
+        }
+
+        .feature p {
+          font-size: 14px;
+        }
+
+        .courses-grid {
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: 20px;
+        }
+
+        .course-header {
+          padding: 20px;
+          font-size: 22px;
+        }
+
+        .course-body {
+          padding: 30px 20px 20px;
+        }
+
+        .course-description {
+          font-size: 14px;
+        }
+
+        .modal-content {
+          max-height: 90vh;
+        }
+
+        .modal-header {
+          padding: 20px;
+        }
+
+        .modal-title {
+          font-size: 20px;
+        }
+
+        .modal-body {
+          padding: 25px;
+        }
+
+        .qr-container img {
+          max-width: 300px;
+        }
+
+        .admin-table {
+          font-size: 14px;
+        }
+
+        .admin-table th,
+        .admin-table td {
+          padding: 12px 10px;
+        }
+
+        .action-buttons {
+          gap: 8px;
+        }
+
+        .action-buttons .btn {
+          padding: 8px 12px;
+          font-size: 12px;
+        }
+
+        .status-badge {
+          font-size: 11px;
+          padding: 4px 8px;
+        }
+
+        .quiz-options {
+          grid-template-columns: repeat(
+            2,
+            1fr
+          ); /* Two columns on larger screens */
+        }
+
+        .support-options {
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .message-item.sent {
+          margin-left: 20%;
+        }
+
+        .message-item.received {
+          margin-right: 20%;
+        }
+
+        .connection-status {
+          bottom: 20px;
+          left: 20px;
+        }
+
+        .footer-content {
+          flex-direction: row;
+          gap: 15px;
+          text-align: left;
+        }
+      }
     </style>
   </head>
   <body>
@@ -1799,11 +1727,8 @@
         <div class="header-content">
           <div class="logo">
             <img src="../static/images/logohn.jpg" alt="logo" />
-            Han Nay Japanese Language Center
+            Han Nay Japanese
           </div>
-          <button class="mobile-menu-toggle" id="mobile-menu-toggle">
-            <i class="fas fa-bars"></i>
-          </button>
           <nav id="main-nav">
             <ul>
               <li><a href="#" id="home-link">Home</a></li>
@@ -1831,9 +1756,6 @@
         </div>
       </div>
     </header>
-
-    <!-- Overlay for mobile menu -->
-    <div class="overlay" id="overlay"></div>
 
     <main class="container">
       <!-- Home Section -->
@@ -2298,10 +2220,35 @@
         </div>
       </section>
     </main>
-    <!-- Add this right before the closing </body> tag -->
 
-    <!-- Footer Section -->
-    <footer class="site-footer">
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+      <a href="#" class="mobile-bottom-nav-item" id="mobile-home-link">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </a>
+      <a href="#" class="mobile-bottom-nav-item" id="mobile-courses-link">
+        <i class="fas fa-book"></i>
+        <span>Courses</span>
+      </a>
+      <a
+        href="#"
+        class="mobile-bottom-nav-item"
+        id="mobile-support-link"
+        style="display: none"
+      >
+        <i class="fas fa-headset"></i>
+        <span>Support</span>
+        <span class="notification-indicator" style="display: none"></span>
+      </a>
+      <a href="#" class="mobile-bottom-nav-item" id="mobile-profile-link">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+      </a>
+    </nav>
+
+    <!-- Footer Section (only visible on desktop) -->
+    <footer class="site-footer" style="display: none">
       <div class="container">
         <div class="footer-content">
           <div class="footer-copyright">
@@ -2625,11 +2572,8 @@
         "notification-message"
       );
       const connectionStatus = document.getElementById("connection-status");
-      const mobileMenuToggle = document.getElementById("mobile-menu-toggle");
-      const mainNav = document.getElementById("main-nav");
-      const overlay = document.getElementById("overlay");
 
-      // Navigation links
+      // Desktop Navigation links
       const homeLink = document.getElementById("home-link");
       const coursesLink = document.getElementById("courses-link");
       const supportLink = document.getElementById("support-link");
@@ -2638,6 +2582,15 @@
       const registerLink = document.getElementById("register-link");
       const logoutLink = document.getElementById("logout-link");
       const adminLink = document.getElementById("admin-link");
+
+      // Mobile Navigation links
+      const mobileHomeLink = document.getElementById("mobile-home-link");
+      const mobileCoursesLink = document.getElementById("mobile-courses-link");
+      const mobileSupportLink = document.getElementById("mobile-support-link");
+      const mobileProfileLink = document.getElementById("mobile-profile-link");
+      const mobileNavItems = document.querySelectorAll(
+        ".mobile-bottom-nav-item"
+      );
 
       // Support elements
       const getSupportOption = document.getElementById("get-support-option");
@@ -2714,25 +2667,6 @@
           vocabulary: "https://example.com/n1-vocabulary",
         },
       };
-
-      // Mobile menu toggle
-      mobileMenuToggle.addEventListener("click", () => {
-        mainNav.classList.toggle("active");
-        overlay.classList.toggle("active");
-      });
-
-      overlay.addEventListener("click", () => {
-        mainNav.classList.remove("active");
-        overlay.classList.remove("active");
-      });
-
-      // Close mobile menu when a link is clicked
-      document.querySelectorAll("#main-nav a").forEach((link) => {
-        link.addEventListener("click", () => {
-          mainNav.classList.remove("active");
-          overlay.classList.remove("active");
-        });
-      });
 
       // Initialize Socket.IO connection
       function initializeSocket() {
@@ -3016,7 +2950,7 @@
         }
       }
 
-      // Event listeners
+      // Event listeners for DESKTOP navigation
       homeLink.addEventListener("click", (e) => {
         e.preventDefault();
         showSection("home");
@@ -3063,12 +2997,48 @@
 
       adminLink.addEventListener("click", (e) => {
         e.preventDefault();
-        // Check if user is already logged in as admin
         if (currentUser && currentUser.is_admin) {
           showSection("admin-dashboard");
           loadAdminDashboard();
         } else {
           showSection("admin-login");
+        }
+      });
+
+      // Event listeners for MOBILE navigation
+      mobileHomeLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        showSection("home");
+      });
+
+      mobileCoursesLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        showSection("courses");
+        loadCourses();
+      });
+
+      mobileSupportLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (currentUser) {
+          showSection("support");
+          loadUserMessages();
+        } else {
+          showNotification("Please login to access support", "warning");
+          showSection("auth");
+        }
+      });
+
+      mobileProfileLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (currentUser) {
+          // If logged in, show logout option or profile
+          if (confirm("Do you want to logout?")) {
+            logout();
+          }
+        } else {
+          // If not logged in, show login/register
+          showSection("auth");
+          showLoginForm();
         }
       });
 
@@ -3389,30 +3359,48 @@
         adminLoginSection.style.display = "none";
         adminDashboardSection.style.display = "none";
 
+        // Hide footer on mobile
+        const footer = document.querySelector(".site-footer");
+        if (window.innerWidth <= 768) {
+          footer.style.display = "none";
+        } else {
+          footer.style.display = "flex";
+        }
+
         switch (section) {
           case "home":
             homeSection.style.display = "block";
+            updateMobileNavActive("mobile-home-link");
             break;
           case "auth":
             authSection.style.display = "block";
+            updateMobileNavActive("mobile-profile-link"); // Profile link leads to auth
             break;
           case "courses":
             coursesSection.style.display = "block";
+            updateMobileNavActive("mobile-courses-link");
             break;
           case "support":
             supportSection.style.display = "block";
+            updateMobileNavActive("mobile-support-link");
             break;
           case "admin-login":
             adminLoginSection.style.display = "block";
+            updateMobileNavActive("mobile-profile-link"); // Profile link leads to admin login
             break;
           case "admin-dashboard":
             adminDashboardSection.style.display = "block";
+            updateMobileNavActive("mobile-profile-link"); // Profile link leads to admin dashboard
             break;
         }
+      }
 
-        // Close mobile menu when changing sections
-        mainNav.classList.remove("active");
-        overlay.classList.remove("active");
+      function updateMobileNavActive(activeLinkId) {
+        mobileNavItems.forEach((item) => item.classList.remove("active"));
+        const activeLink = document.getElementById(activeLinkId);
+        if (activeLink) {
+          activeLink.classList.add("active");
+        }
       }
 
       function showLoginForm() {
@@ -3449,7 +3437,7 @@
           notification.classList.remove("show");
         }, duration);
       }
-      // Add this function in your JavaScript section
+
       function handleGoogleAuthResponse() {
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get("code");
@@ -3527,6 +3515,7 @@
       }
 
       function updateUI() {
+        // Update Desktop Nav
         if (currentUser) {
           loginLink.style.display = "none";
           registerLink.style.display = "none";
@@ -3557,6 +3546,21 @@
           coursesLink.style.display = "block";
           contactLink.style.display = "block";
         }
+
+        // Update Mobile Nav
+        if (currentUser) {
+          // This line is now fixed
+          mobileSupportLink.style.display = "flex";
+          mobileProfileLink.querySelector("span").textContent =
+            currentUser.is_admin ? "Admin" : "Profile";
+          mobileProfileLink.querySelector("i").className = currentUser.is_admin
+            ? "fas fa-user-shield"
+            : "fas fa-user";
+        } else {
+          mobileSupportLink.style.display = "none";
+          mobileProfileLink.querySelector("span").textContent = "Profile";
+          mobileProfileLink.querySelector("i").className = "fas fa-user";
+        }
       }
 
       // Update notification indicator
@@ -3564,13 +3568,13 @@
         let indicator;
 
         if (section === "support" || section === "teacher") {
-          indicator = document
-            .getElementById("support-link")
-            .querySelector(".notification-indicator");
+          indicator = mobileSupportLink.querySelector(
+            ".notification-indicator"
+          );
         } else if (section === "admin") {
-          indicator = document
-            .getElementById("admin-link")
-            .querySelector(".notification-indicator");
+          indicator = mobileProfileLink.querySelector(
+            ".notification-indicator"
+          );
         }
 
         if (!indicator) {
@@ -3579,9 +3583,9 @@
           indicator.className = "notification-indicator";
 
           if (section === "support" || section === "teacher") {
-            document.getElementById("support-link").appendChild(indicator);
+            mobileSupportLink.appendChild(indicator);
           } else if (section === "admin") {
-            document.getElementById("admin-link").appendChild(indicator);
+            mobileProfileLink.appendChild(indicator);
           }
         }
 
