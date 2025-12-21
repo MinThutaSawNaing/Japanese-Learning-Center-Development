@@ -43,6 +43,7 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
       }
 
       body {
@@ -53,14 +54,13 @@
         overflow-x: hidden;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        /* Padding to prevent content from being hidden under the bottom nav on mobile */
         padding-bottom: calc(70px + env(safe-area-inset-bottom));
       }
 
       .container {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 0 15px; /* More horizontal padding for mobile */
+        padding: 0 15px;
       }
 
       /* --- Header & Desktop Navigation --- */
@@ -81,7 +81,7 @@
       }
 
       .logo {
-        font-size: 20px; /* Smaller font for mobile */
+        font-size: 20px;
         font-weight: 700;
         color: var(--primary-color);
         display: flex;
@@ -100,26 +100,27 @@
 
       .logo img {
         margin-right: 8px;
-        height: 45px; /* Smaller logo for mobile */
+        height: 45px;
         width: auto;
       }
 
-      nav {
-        display: none; /* Hidden by default, shown on desktop */
+      /* Desktop Navigation */
+      .desktop-nav {
+        display: none;
       }
 
-      nav ul {
+      .desktop-nav ul {
         display: flex;
         list-style: none;
         align-items: center;
       }
 
-      nav ul li {
+      .desktop-nav ul li {
         margin-left: 25px;
         position: relative;
       }
 
-      nav ul li a {
+      .desktop-nav ul li a {
         text-decoration: none;
         color: var(--text-color);
         font-weight: 500;
@@ -129,7 +130,7 @@
         padding: 5px 0;
       }
 
-      nav ul li a::after {
+      .desktop-nav ul li a::after {
         content: "";
         position: absolute;
         bottom: 0;
@@ -140,22 +141,121 @@
         transition: width 0.3s ease;
       }
 
-      nav ul li a:hover {
+      .desktop-nav ul li a:hover {
         color: var(--primary-color);
       }
 
-      nav ul li a:hover::after {
+      .desktop-nav ul li a:hover::after {
         width: 100%;
+      }
+
+      /* Mobile Menu Button */
+      .mobile-menu-btn {
+        display: block;
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: var(--text-color);
+        cursor: pointer;
+        padding: 8px;
+        z-index: 1000;
+      }
+
+      /* Mobile Menu Overlay */
+      .mobile-menu-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 998;
+        display: none;
+      }
+
+      .mobile-menu-overlay.active {
+        display: block;
+      }
+
+      /* Mobile Menu */
+      .mobile-menu {
+        position: fixed;
+        top: 0;
+        right: -280px;
+        width: 280px;
+        height: 100%;
+        background-color: var(--white);
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+        z-index: 999;
+        transition: right 0.3s ease;
+        overflow-y: auto;
+      }
+
+      .mobile-menu.active {
+        right: 0;
+      }
+
+      .mobile-menu-header {
+        padding: 20px;
+        border-bottom: 1px solid var(--light-gray);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .mobile-menu-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: var(--text-color);
+        cursor: pointer;
+      }
+
+      .mobile-nav-list {
+        list-style: none;
+        padding: 20px 0;
+      }
+
+      .mobile-nav-item {
+        border-bottom: 1px solid var(--light-gray);
+      }
+
+      .mobile-nav-item a {
+        display: flex;
+        align-items: center;
+        padding: 15px 20px;
+        text-decoration: none;
+        color: var(--text-color);
+        font-weight: 500;
+        font-size: 16px;
+        transition: all 0.3s ease;
+      }
+
+      .mobile-nav-item a:hover {
+        background-color: var(--beige);
+        color: var(--primary-color);
+      }
+
+      .mobile-nav-item a i {
+        margin-right: 10px;
+        width: 24px;
+        text-align: center;
       }
 
       /* --- Main Content --- */
       main {
         padding-top: 20px;
+        min-height: calc(100vh - 140px);
       }
 
       .section {
         margin: 30px 0;
         animation: fadeIn 0.8s ease;
+        display: none;
+      }
+
+      .section.active {
+        display: block;
       }
 
       @keyframes fadeIn {
@@ -170,7 +270,7 @@
       }
 
       .section-title {
-        font-size: 24px; /* Smaller for mobile */
+        font-size: 24px;
         margin-bottom: 20px;
         color: var(--primary-color);
         text-align: center;
@@ -192,7 +292,7 @@
 
       /* --- Mobile Bottom Navigation --- */
       .mobile-bottom-nav {
-        display: flex; /* Visible by default on mobile */
+        display: flex;
         justify-content: space-around;
         align-items: center;
         background-color: var(--white);
@@ -202,7 +302,7 @@
         left: 0;
         width: 100%;
         z-index: 1000;
-        padding: 8px 0; /* Standard padding for top, left, right */
+        padding: 8px 0;
         padding-bottom: max(15px, env(safe-area-inset-bottom));
       }
 
@@ -217,7 +317,8 @@
         font-weight: 500;
         transition: color 0.3s ease;
         padding: 5px;
-        min-width: 50px;
+        min-width: 60px;
+        flex: 1;
       }
 
       .mobile-bottom-nav-item i {
@@ -227,12 +328,13 @@
 
       .mobile-bottom-nav-item.active {
         color: var(--primary-color);
+        transform: translateY(-2px);
       }
 
       .mobile-bottom-nav-item .notification-indicator {
         position: absolute;
         top: 5px;
-        right: 10px;
+        right: calc(50% - 15px);
         width: 8px;
         height: 8px;
         background-color: var(--danger-color);
@@ -242,8 +344,10 @@
 
       /* --- Shared Component Styles --- */
       .btn {
-        display: inline-block;
-        padding: 12px 20px; /* Slightly smaller padding */
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 20px;
         background: var(--gradient-primary);
         color: white;
         border: none;
@@ -257,7 +361,8 @@
         overflow: hidden;
         z-index: 1;
         font-size: 16px;
-        min-height: 48px; /* Ensure good tap target size */
+        min-height: 48px;
+        gap: 8px;
       }
 
       .btn::before {
@@ -473,7 +578,7 @@
             rgba(58, 212, 226, 0.1) 100%
           ),
           url("static/images/hero.jpg") center/cover;
-        padding: 40px 0; /* Less padding on mobile */
+        padding: 40px 0;
         text-align: center;
         margin-bottom: 30px;
         border-radius: 0 0 20px 20px;
@@ -497,7 +602,7 @@
       }
 
       .hero h1 {
-        font-size: 28px; /* Smaller for mobile */
+        font-size: 28px;
         margin-bottom: 15px;
         position: relative;
         z-index: 1;
@@ -513,7 +618,7 @@
 
       .features {
         display: grid;
-        grid-template-columns: 1fr; /* Single column on mobile */
+        grid-template-columns: 1fr;
         gap: 15px;
         margin: 40px 0;
       }
@@ -568,7 +673,7 @@
         max-width: 450px;
         margin: 0 auto;
         background-color: var(--white);
-        padding: 30px 20px; /* More padding on mobile */
+        padding: 30px 20px;
         border-radius: 15px;
         box-shadow: var(--shadow-xl);
         position: relative;
@@ -603,7 +708,7 @@
 
       .courses-grid {
         display: grid;
-        grid-template-columns: 1fr; /* Single column on mobile */
+        grid-template-columns: 1fr;
         gap: 15px;
       }
 
@@ -634,7 +739,7 @@
       .course-header {
         background: var(--gradient-primary);
         color: white;
-        padding: 15px; /* Less padding on mobile */
+        padding: 15px;
         font-size: 20px;
         font-weight: 700;
         text-align: center;
@@ -655,7 +760,7 @@
       }
 
       .course-body {
-        padding: 25px 15px 15px; /* Adjusted padding */
+        padding: 25px 15px 15px;
       }
 
       .course-description {
@@ -706,6 +811,10 @@
         padding: 20px;
       }
 
+      .modal.active {
+        display: flex;
+      }
+
       .modal-content {
         background-color: var(--white);
         padding: 0;
@@ -733,14 +842,14 @@
       .modal-header {
         background: var(--gradient-primary);
         color: white;
-        padding: 15px 20px; /* Adjusted padding */
+        padding: 15px 20px;
         display: flex;
         justify-content: space-between;
         align-items: center;
       }
 
       .modal-title {
-        font-size: 18px; /* Smaller for mobile */
+        font-size: 18px;
         font-weight: 600;
       }
 
@@ -765,7 +874,7 @@
       }
 
       .modal-body {
-        padding: 20px; /* Adjusted padding */
+        padding: 20px;
         max-height: calc(90vh - 80px);
         overflow-y: auto;
       }
@@ -779,7 +888,7 @@
       }
 
       .qr-container img {
-        max-width: 250px; /* Smaller on mobile */
+        max-width: 250px;
         height: auto;
         border-radius: 10px;
         box-shadow: var(--shadow-md);
@@ -845,12 +954,12 @@
         border-radius: 10px;
         overflow: hidden;
         box-shadow: var(--shadow-lg);
-        font-size: 12px; /* Smaller font for mobile */
+        font-size: 12px;
       }
 
       .admin-table th,
       .admin-table td {
-        padding: 10px 5px; /* Less padding on mobile */
+        padding: 10px 5px;
         text-align: left;
       }
 
@@ -936,12 +1045,12 @@
 
       .action-buttons {
         display: flex;
-        gap: 5px; /* Smaller gap on mobile */
+        gap: 5px;
         flex-wrap: wrap;
       }
 
       .action-buttons .btn {
-        padding: 6px 10px; /* Smaller buttons */
+        padding: 6px 10px;
         font-size: 11px;
         min-height: auto;
       }
@@ -1051,7 +1160,7 @@
 
       .connection-status {
         position: fixed;
-        bottom: 80px; /* Moved up to be above the bottom nav */
+        bottom: 80px;
         left: 20px;
         padding: 8px 12px;
         border-radius: 20px;
@@ -1086,7 +1195,7 @@
       /* Support section styles */
       .support-options {
         display: grid;
-        grid-template-columns: 1fr; /* Single column on mobile */
+        grid-template-columns: 1fr;
         gap: 20px;
         margin-bottom: 30px;
       }
@@ -1193,17 +1302,17 @@
         display: flex;
         margin-bottom: 20px;
         border-bottom: 2px solid var(--light-gray);
-        overflow-x: auto; /* Allow horizontal scrolling on small screens */
+        overflow-x: auto;
       }
 
       .tab {
-        padding: 10px 15px; /* Adjusted padding */
+        padding: 10px 15px;
         cursor: pointer;
         font-weight: 500;
         color: var(--dark-gray);
         transition: all 0.3s ease;
         position: relative;
-        white-space: nowrap; /* Prevent text wrapping */
+        white-space: nowrap;
       }
 
       .tab.active {
@@ -1552,11 +1661,11 @@
       /* --- Desktop Styles (min-width: 769px) --- */
       @media (min-width: 769px) {
         body {
-          padding-bottom: 0; /* Remove bottom padding for desktop */
+          padding-bottom: 0;
         }
 
         .container {
-          padding: 0 20px; /* Standard padding for desktop */
+          padding: 0 20px;
         }
 
         header {
@@ -1578,12 +1687,16 @@
           margin-right: 10px;
         }
 
-        nav {
-          display: flex; /* Show desktop nav */
+        .desktop-nav {
+          display: flex;
+        }
+
+        .mobile-menu-btn {
+          display: none;
         }
 
         .mobile-bottom-nav {
-          display: none; /* Hide mobile nav */
+          display: none;
         }
 
         main {
@@ -1690,10 +1803,7 @@
         }
 
         .quiz-options {
-          grid-template-columns: repeat(
-            2,
-            1fr
-          ); /* Two columns on larger screens */
+          grid-template-columns: repeat(2, 1fr);
         }
 
         .support-options {
@@ -1729,37 +1839,52 @@
             <img src="../static/images/logohn.jpg" alt="logo" />
             Han Nay Japanese
           </div>
-          <nav id="main-nav">
+          <nav class="desktop-nav">
             <ul>
-              <li><a href="#" id="home-link">Home</a></li>
-              <li><a href="#" id="courses-link">Courses</a></li>
-              <li>
-                <a href="#" id="support-link" style="display: none">Support</a>
-              </li>
+              <li><a href="#" data-section="home">Home</a></li>
+              <li><a href="#" data-section="courses">Courses</a></li>
+              <li><a href="#" data-section="support" style="display: none">Support</a></li>
               <li><a href="#" id="contact-link">Contact Us</a></li>
-              <li>
-                <a href="#" id="login-link" style="display: none">Login</a>
-              </li>
-              <li>
-                <a href="#" id="register-link" style="display: none"
-                  >Register</a
-                >
-              </li>
-              <li>
-                <a href="#" id="logout-link" style="display: none">Logout</a>
-              </li>
-              <li>
-                <a href="#" id="admin-link" style="display: none">Admin</a>
-              </li>
+              <li><a href="#" data-section="auth" style="display: none">Login</a></li>
+              <li><a href="#" data-section="auth" style="display: none">Register</a></li>
+              <li><a href="#" id="logout-link" style="display: none">Logout</a></li>
+              <li><a href="#" data-section="admin-dashboard" style="display: none">Admin</a></li>
             </ul>
           </nav>
+          <button class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+          </button>
         </div>
       </div>
     </header>
 
+    <!-- Mobile Menu -->
+    <div class="mobile-menu-overlay"></div>
+    <nav class="mobile-menu">
+      <div class="mobile-menu-header">
+        <div class="logo">
+          <img src="../static/images/logohn.jpg" alt="logo" style="height: 30px;" />
+          Han Nay Japanese
+        </div>
+        <button class="mobile-menu-close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <ul class="mobile-nav-list">
+        <li class="mobile-nav-item"><a href="#" data-section="home"><i class="fas fa-home"></i> Home</a></li>
+        <li class="mobile-nav-item"><a href="#" data-section="courses"><i class="fas fa-book"></i> Courses</a></li>
+        <li class="mobile-nav-item"><a href="#" data-section="support" style="display: none"><i class="fas fa-headset"></i> Support</a></li>
+        <li class="mobile-nav-item"><a href="#" id="mobile-contact-link"><i class="fas fa-phone"></i> Contact Us</a></li>
+        <li class="mobile-nav-item"><a href="#" data-section="auth" style="display: none"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+        <li class="mobile-nav-item"><a href="#" data-section="auth" style="display: none"><i class="fas fa-user-plus"></i> Register</a></li>
+        <li class="mobile-nav-item"><a href="#" id="mobile-logout-link" style="display: none"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        <li class="mobile-nav-item"><a href="#" data-section="admin-dashboard" style="display: none"><i class="fas fa-user-shield"></i> Admin</a></li>
+      </ul>
+    </nav>
+
     <main class="container">
       <!-- Home Section -->
-      <section id="home-section" class="section">
+      <section id="home-section" class="section active">
         <div class="hero">
           <h1>Master Japanese Language</h1>
           <p>
@@ -1799,7 +1924,7 @@
       </section>
 
       <!-- Login/Register Section -->
-      <section id="auth-section" class="section" style="display: none">
+      <section id="auth-section" class="section">
         <div class="auth-container">
           <div id="login-form">
             <h2 class="section-title">Login</h2>
@@ -1929,7 +2054,7 @@
       </section>
 
       <!-- Courses Section -->
-      <section id="courses-section" class="section" style="display: none">
+      <section id="courses-section" class="section">
         <div
           style="
             display: flex;
@@ -1951,7 +2076,7 @@
       </section>
 
       <!-- Support Section -->
-      <section id="support-section" class="section" style="display: none">
+      <section id="support-section" class="section">
         <h2 class="section-title">Support Center</h2>
 
         <div class="tabs">
@@ -2036,7 +2161,7 @@
       </section>
 
       <!-- Admin Login Section -->
-      <section id="admin-login-section" class="section" style="display: none">
+      <section id="admin-login-section" class="section">
         <div class="auth-container">
           <h2 class="section-title">Admin Login</h2>
           <form id="admin-login-form-element">
@@ -2081,11 +2206,7 @@
       </section>
 
       <!-- Admin Dashboard Section -->
-      <section
-        id="admin-dashboard-section"
-        class="section"
-        style="display: none"
-      >
+      <section id="admin-dashboard-section" class="section">
         <div
           style="
             display: flex;
@@ -2223,25 +2344,25 @@
 
     <!-- Mobile Bottom Navigation -->
     <nav class="mobile-bottom-nav">
-      <a href="#" class="mobile-bottom-nav-item" id="mobile-home-link">
+      <a href="#" class="mobile-bottom-nav-item active" data-section="home">
         <i class="fas fa-home"></i>
         <span>Home</span>
       </a>
-      <a href="#" class="mobile-bottom-nav-item" id="mobile-courses-link">
+      <a href="#" class="mobile-bottom-nav-item" data-section="courses">
         <i class="fas fa-book"></i>
         <span>Courses</span>
       </a>
       <a
         href="#"
         class="mobile-bottom-nav-item"
-        id="mobile-support-link"
+        data-section="support"
         style="display: none"
       >
         <i class="fas fa-headset"></i>
         <span>Support</span>
         <span class="notification-indicator" style="display: none"></span>
       </a>
-      <a href="#" class="mobile-bottom-nav-item" id="mobile-profile-link">
+      <a href="#" class="mobile-bottom-nav-item" id="mobile-profile-link" data-section="auth">
         <i class="fas fa-user"></i>
         <span>Profile</span>
       </a>
@@ -2545,6 +2666,13 @@
       let quizScore = 0;
 
       // DOM elements
+      const sections = document.querySelectorAll('.section');
+      const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+      const mobileMenuClose = document.querySelector('.mobile-menu-close');
+      const mobileMenu = document.querySelector('.mobile-menu');
+      const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+      const navLinks = document.querySelectorAll('a[data-section]');
+      const bottomNavItems = document.querySelectorAll('.mobile-bottom-nav-item');
       const homeSection = document.getElementById("home-section");
       const authSection = document.getElementById("auth-section");
       const coursesSection = document.getElementById("courses-section");
@@ -2573,24 +2701,12 @@
       );
       const connectionStatus = document.getElementById("connection-status");
 
-      // Desktop Navigation links
-      const homeLink = document.getElementById("home-link");
-      const coursesLink = document.getElementById("courses-link");
-      const supportLink = document.getElementById("support-link");
-      const contactLink = document.getElementById("contact-link");
-      const loginLink = document.getElementById("login-link");
-      const registerLink = document.getElementById("register-link");
+      // Navigation links
       const logoutLink = document.getElementById("logout-link");
-      const adminLink = document.getElementById("admin-link");
-
-      // Mobile Navigation links
-      const mobileHomeLink = document.getElementById("mobile-home-link");
-      const mobileCoursesLink = document.getElementById("mobile-courses-link");
-      const mobileSupportLink = document.getElementById("mobile-support-link");
+      const mobileLogoutLink = document.getElementById("mobile-logout-link");
+      const mobileContactLink = document.getElementById("mobile-contact-link");
+      const contactLink = document.getElementById("contact-link");
       const mobileProfileLink = document.getElementById("mobile-profile-link");
-      const mobileNavItems = document.querySelectorAll(
-        ".mobile-bottom-nav-item"
-      );
 
       // Support elements
       const getSupportOption = document.getElementById("get-support-option");
@@ -2667,6 +2783,100 @@
           vocabulary: "https://example.com/n1-vocabulary",
         },
       };
+
+      // Mobile menu functionality
+      mobileMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.add('active');
+        mobileMenuOverlay.classList.add('active');
+      });
+
+      mobileMenuClose.addEventListener('click', () => {
+        mobileMenu.classList.remove('active');
+        mobileMenuOverlay.classList.remove('active');
+      });
+
+      mobileMenuOverlay.addEventListener('click', () => {
+        mobileMenu.classList.remove('active');
+        mobileMenuOverlay.classList.remove('active');
+      });
+
+      // Navigation functionality
+      function showSection(sectionId) {
+        // Hide all sections
+        sections.forEach(section => {
+          section.classList.remove('active');
+        });
+
+        // Show selected section
+        const targetSection = document.getElementById(sectionId + '-section');
+        if (targetSection) {
+          targetSection.classList.add('active');
+        }
+
+        // Update active navigation items
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.dataset.section === sectionId) {
+            link.classList.add('active');
+          }
+        });
+
+        // Update bottom navigation
+        bottomNavItems.forEach(item => {
+          item.classList.remove('active');
+          if (item.dataset.section === sectionId) {
+            item.classList.add('active');
+          }
+        });
+
+        // Close mobile menu if open
+        mobileMenu.classList.remove('active');
+        mobileMenuOverlay.classList.remove('active');
+
+        // Load specific section data
+        if (sectionId === 'courses') {
+          loadCourses();
+        } else if (sectionId === 'support' && currentUser) {
+          loadUserMessages();
+        } else if (sectionId === 'admin-dashboard' && currentUser && currentUser.is_admin) {
+          loadAdminDashboard();
+        }
+      }
+
+      // Add event listeners to navigation links
+      navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const sectionId = link.dataset.section;
+          if (sectionId) {
+            showSection(sectionId);
+          }
+        });
+      });
+
+      // Bottom navigation event listeners
+      bottomNavItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+          const sectionId = item.dataset.section;
+          if (sectionId) {
+            showSection(sectionId);
+          }
+        });
+      });
+
+      // Contact modal
+      contactLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        contactModal.classList.add('active');
+      });
+
+      mobileContactLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        contactModal.classList.add('active');
+        mobileMenu.classList.remove('active');
+        mobileMenuOverlay.classList.remove('active');
+      });
 
       // Initialize Socket.IO connection
       function initializeSocket() {
@@ -2950,98 +3160,7 @@
         }
       }
 
-      // Event listeners for DESKTOP navigation
-      homeLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        showSection("home");
-      });
-
-      coursesLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        showSection("courses");
-        loadCourses();
-      });
-
-      supportLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        if (currentUser) {
-          showSection("support");
-          loadUserMessages();
-        } else {
-          showNotification("Please login to access support", "warning");
-          showSection("auth");
-        }
-      });
-
-      contactLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        contactModal.style.display = "flex";
-      });
-
-      loginLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        showSection("auth");
-        showLoginForm();
-      });
-
-      registerLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        showSection("auth");
-        showRegisterForm();
-      });
-
-      logoutLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        logout();
-      });
-
-      adminLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        if (currentUser && currentUser.is_admin) {
-          showSection("admin-dashboard");
-          loadAdminDashboard();
-        } else {
-          showSection("admin-login");
-        }
-      });
-
-      // Event listeners for MOBILE navigation
-      mobileHomeLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        showSection("home");
-      });
-
-      mobileCoursesLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        showSection("courses");
-        loadCourses();
-      });
-
-      mobileSupportLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        if (currentUser) {
-          showSection("support");
-          loadUserMessages();
-        } else {
-          showNotification("Please login to access support", "warning");
-          showSection("auth");
-        }
-      });
-
-      mobileProfileLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        if (currentUser) {
-          // If logged in, show logout option or profile
-          if (confirm("Do you want to logout?")) {
-            logout();
-          }
-        } else {
-          // If not logged in, show login/register
-          showSection("auth");
-          showLoginForm();
-        }
-      });
-
+      // Event listeners for buttons
       document
         .getElementById("get-started-btn")
         .addEventListener("click", () => {
@@ -3241,7 +3360,7 @@
       document
         .getElementById("create-admin-btn")
         .addEventListener("click", () => {
-          adminManagementModal.style.display = "flex";
+          adminManagementModal.classList.add("active");
         });
 
       // Create admin form
@@ -3273,68 +3392,21 @@
           loadCaptcha();
         });
 
-      document.querySelector(".close-modal").addEventListener("click", () => {
-        courseModal.style.display = "none";
-        resetModal();
-      });
-
-      // Close support reply modal
-      const closeSupportReplyModal =
-        supportReplyModal.querySelector(".close-modal");
-      closeSupportReplyModal.addEventListener("click", () => {
-        supportReplyModal.style.display = "none";
-        document.getElementById("reply-form-element").reset();
-      });
-
-      // Close teacher message modal
-      const closeTeacherMessageModal =
-        teacherMessageModal.querySelector(".close-modal");
-      closeTeacherMessageModal.addEventListener("click", () => {
-        teacherMessageModal.style.display = "none";
-      });
-
-      // Close user management modal
-      const closeUserManagementModal =
-        userManagementModal.querySelector(".close-modal");
-      closeUserManagementModal.addEventListener("click", () => {
-        userManagementModal.style.display = "none";
-      });
-
-      // Close admin management modal
-      const closeAdminManagementModal =
-        adminManagementModal.querySelector(".close-modal");
-      closeAdminManagementModal.addEventListener("click", () => {
-        adminManagementModal.style.display = "none";
-        document.getElementById("create-admin-form-element").reset();
-      });
-
-      // Close contact modal
-      const closeContactModal = contactModal.querySelector(".close-modal");
-      closeContactModal.addEventListener("click", () => {
-        contactModal.style.display = "none";
+      document.querySelectorAll(".close-modal").forEach(button => {
+        button.addEventListener("click", () => {
+          button.closest('.modal').classList.remove('active');
+          if (button.closest('#course-modal')) {
+            resetModal();
+          }
+        });
       });
 
       window.addEventListener("click", (e) => {
-        if (e.target === courseModal) {
-          courseModal.style.display = "none";
-          resetModal();
-        }
-        if (e.target === supportReplyModal) {
-          supportReplyModal.style.display = "none";
-          document.getElementById("reply-form-element").reset();
-        }
-        if (e.target === teacherMessageModal) {
-          teacherMessageModal.style.display = "none";
-        }
-        if (e.target === userManagementModal) {
-          userManagementModal.style.display = "none";
-        }
-        if (e.target === adminManagementModal) {
-          adminManagementModal.style.display = "none";
-          document.getElementById("create-admin-form-element").reset();
-        }
-        if (e.target === contactModal) {
-          contactModal.style.display = "none";
+        if (e.target.classList.contains('modal')) {
+          e.target.classList.remove("active");
+          if (e.target.id === "course-modal") {
+            resetModal();
+          }
         }
       });
 
@@ -3351,58 +3423,6 @@
         });
 
       // Functions
-      function showSection(section) {
-        homeSection.style.display = "none";
-        authSection.style.display = "none";
-        coursesSection.style.display = "none";
-        supportSection.style.display = "none";
-        adminLoginSection.style.display = "none";
-        adminDashboardSection.style.display = "none";
-
-        // Hide footer on mobile
-        const footer = document.querySelector(".site-footer");
-        if (window.innerWidth <= 768) {
-          footer.style.display = "none";
-        } else {
-          footer.style.display = "flex";
-        }
-
-        switch (section) {
-          case "home":
-            homeSection.style.display = "block";
-            updateMobileNavActive("mobile-home-link");
-            break;
-          case "auth":
-            authSection.style.display = "block";
-            updateMobileNavActive("mobile-profile-link"); // Profile link leads to auth
-            break;
-          case "courses":
-            coursesSection.style.display = "block";
-            updateMobileNavActive("mobile-courses-link");
-            break;
-          case "support":
-            supportSection.style.display = "block";
-            updateMobileNavActive("mobile-support-link");
-            break;
-          case "admin-login":
-            adminLoginSection.style.display = "block";
-            updateMobileNavActive("mobile-profile-link"); // Profile link leads to admin login
-            break;
-          case "admin-dashboard":
-            adminDashboardSection.style.display = "block";
-            updateMobileNavActive("mobile-profile-link"); // Profile link leads to admin dashboard
-            break;
-        }
-      }
-
-      function updateMobileNavActive(activeLinkId) {
-        mobileNavItems.forEach((item) => item.classList.remove("active"));
-        const activeLink = document.getElementById(activeLinkId);
-        if (activeLink) {
-          activeLink.classList.add("active");
-        }
-      }
-
       function showLoginForm() {
         loginForm.style.display = "block";
         registerForm.style.display = "none";
@@ -3517,49 +3537,53 @@
       function updateUI() {
         // Update Desktop Nav
         if (currentUser) {
-          loginLink.style.display = "none";
-          registerLink.style.display = "none";
-          logoutLink.style.display = "block";
-          supportLink.style.display = "block";
+          // Hide login/register, show logout
+          document.querySelectorAll('a[data-section="auth"]').forEach(link => {
+            link.style.display = 'none';
+          });
+          logoutLink.style.display = 'block';
+          mobileLogoutLink.style.display = 'block';
+          
+          // Show/hide support based on user type
+          const supportLinks = document.querySelectorAll('a[data-section="support"]');
+          supportLinks.forEach(link => {
+            link.style.display = currentUser.is_admin ? 'none' : 'block';
+          });
 
-          if (currentUser.is_admin) {
-            adminLink.style.display = "block";
-            // Hide unnecessary navigation items for admins
-            homeLink.style.display = "none";
-            coursesLink.style.display = "none";
-            contactLink.style.display = "none";
-          } else {
-            adminLink.style.display = "none";
-            // Show navigation items for regular users
-            homeLink.style.display = "block";
-            coursesLink.style.display = "block";
-            contactLink.style.display = "block";
-          }
+          // Show admin link if admin
+          const adminLinks = document.querySelectorAll('a[data-section="admin-dashboard"]');
+          adminLinks.forEach(link => {
+            link.style.display = currentUser.is_admin ? 'block' : 'none';
+          });
+
+          // Update mobile profile link
+          mobileProfileLink.querySelector('i').className = currentUser.is_admin ? 'fas fa-user-shield' : 'fas fa-user';
+          mobileProfileLink.querySelector('span').textContent = currentUser.is_admin ? 'Admin' : 'Profile';
         } else {
-          loginLink.style.display = "block";
-          registerLink.style.display = "block";
-          logoutLink.style.display = "none";
-          supportLink.style.display = "none";
-          adminLink.style.display = "none";
-          // Show navigation items for non-logged in users
-          homeLink.style.display = "block";
-          coursesLink.style.display = "block";
-          contactLink.style.display = "block";
+          // Show login/register, hide logout
+          document.querySelectorAll('a[data-section="auth"]').forEach(link => {
+            link.style.display = 'block';
+          });
+          logoutLink.style.display = 'none';
+          mobileLogoutLink.style.display = 'none';
+          
+          // Hide support and admin links
+          document.querySelectorAll('a[data-section="support"]').forEach(link => {
+            link.style.display = 'none';
+          });
+          document.querySelectorAll('a[data-section="admin-dashboard"]').forEach(link => {
+            link.style.display = 'none';
+          });
+
+          // Reset mobile profile link
+          mobileProfileLink.querySelector('i').className = 'fas fa-user';
+          mobileProfileLink.querySelector('span').textContent = 'Profile';
         }
 
-        // Update Mobile Nav
-        if (currentUser) {
-          // This line is now fixed
-          mobileSupportLink.style.display = "flex";
-          mobileProfileLink.querySelector("span").textContent =
-            currentUser.is_admin ? "Admin" : "Profile";
-          mobileProfileLink.querySelector("i").className = currentUser.is_admin
-            ? "fas fa-user-shield"
-            : "fas fa-user";
-        } else {
-          mobileSupportLink.style.display = "none";
-          mobileProfileLink.querySelector("span").textContent = "Profile";
-          mobileProfileLink.querySelector("i").className = "fas fa-user";
+        // Update mobile bottom nav
+        const supportBottomNav = document.querySelector('.mobile-bottom-nav-item[data-section="support"]');
+        if (supportBottomNav) {
+          supportBottomNav.style.display = currentUser && !currentUser.is_admin ? 'flex' : 'none';
         }
       }
 
@@ -3568,13 +3592,9 @@
         let indicator;
 
         if (section === "support" || section === "teacher") {
-          indicator = mobileSupportLink.querySelector(
-            ".notification-indicator"
-          );
+          indicator = document.querySelector('.mobile-bottom-nav-item[data-section="support"] .notification-indicator');
         } else if (section === "admin") {
-          indicator = mobileProfileLink.querySelector(
-            ".notification-indicator"
-          );
+          indicator = mobileProfileLink.querySelector('.notification-indicator');
         }
 
         if (!indicator) {
@@ -3583,7 +3603,10 @@
           indicator.className = "notification-indicator";
 
           if (section === "support" || section === "teacher") {
-            mobileSupportLink.appendChild(indicator);
+            const supportNav = document.querySelector('.mobile-bottom-nav-item[data-section="support"]');
+            if (supportNav) {
+              supportNav.appendChild(indicator);
+            }
           } else if (section === "admin") {
             mobileProfileLink.appendChild(indicator);
           }
@@ -3965,7 +3988,7 @@
             "Please login or register to view course details",
             "warning"
           );
-          courseModal.style.display = "none";
+          courseModal.classList.remove("active");
           showSection("auth");
           showLoginForm();
           return;
@@ -4038,7 +4061,7 @@
             });
         }
 
-        courseModal.style.display = "flex";
+        courseModal.classList.add("active");
       }
 
       // Load QR code from server
@@ -4856,7 +4879,7 @@
         document.getElementById("reply-message-type-field").value = "support";
         document.getElementById("reply-message").focus();
 
-        supportReplyModal.style.display = "flex";
+        supportReplyModal.classList.add("active");
       }
 
       // Open teacher reply modal
@@ -4872,7 +4895,7 @@
         document.getElementById("reply-message-type-field").value = "teacher";
         document.getElementById("reply-message").focus();
 
-        supportReplyModal.style.display = "flex";
+        supportReplyModal.classList.add("active");
       }
 
       // Open teacher message view modal
@@ -4924,7 +4947,7 @@
           }
         }
 
-        teacherMessageModal.style.display = "flex";
+        teacherMessageModal.classList.add("active");
       }
 
       // Load user messages
@@ -5256,7 +5279,7 @@
 
           if (data.success) {
             showNotification(data.message, "success");
-            supportReplyModal.style.display = "none";
+            supportReplyModal.classList.remove("active");
             document.getElementById("reply-form-element").reset();
           } else {
             showNotification(data.message, "error");
@@ -5350,7 +5373,7 @@
 
           if (data.success) {
             showNotification(data.message, "success");
-            adminManagementModal.style.display = "none";
+            adminManagementModal.classList.remove("active");
             document.getElementById("create-admin-form-element").reset();
             // Socket.IO will handle the UI update
           } else {
@@ -5553,8 +5576,21 @@
         // Check login status
         checkLoginStatus();
 
-        // Always show courses link in navigation
-        coursesLink.style.display = "block";
+        // Show home section by default
+        showSection('home');
+
+        // Add logout event listeners
+        logoutLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          logout();
+        });
+
+        mobileLogoutLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          logout();
+          mobileMenu.classList.remove('active');
+          mobileMenuOverlay.classList.remove('active');
+        });
 
         // Check if we're on a specific page based on URL
         const path = window.location.pathname;
@@ -5579,8 +5615,6 @@
             showSection("auth");
             showLoginForm();
           }
-        } else {
-          showSection("home");
         }
       });
       // Google Sign-In button
