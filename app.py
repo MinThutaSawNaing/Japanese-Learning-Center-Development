@@ -15,8 +15,14 @@ import requests
 import secrets
 from urllib.parse import urlencode
 from werkzeug.middleware.proxy_fix import ProxyFix
+import time
+import hmac
+import hashlib
+
 app = Flask(__name__)
-app.secret_key = 'japanese_learning_secret_key_change_in_production'  # Change this in production
+app.secret_key = 'japanese_learning_secret_key_change_in_production'
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
+# Change this in production
 # Configure session for better compatibility
 app.config['SESSION_COOKIE_SECURE'] = True  # For HTTPS
 app.config['SESSION_COOKIE_HTTPONLY'] = True
@@ -281,6 +287,30 @@ def handle_join_admin_room():
         join_room('admin')
         emit('room_joined', {'room': 'admin'})
         logger.info(f"Admin {session['user_id']} explicitly joined admin room")
+def verify_telegram_auth(data: dict, bot_token: str) -> bool:
+    if not bot_token:
+        return False
+
+    received_hash = data.get("hash")
+    if not received_hash:
+        return False
+
+    # Build data-check-string
+    pairs = []
+    for k in sorted(data.keys()):
+        if k == "hash":
+            continue
+        pairs.append(f"{k}={data[k]}")
+    data_check_string = "\n".join(pairs)
+
+    secret_key = hashlib.sha256(bot_token.encode()).digest()
+    calculated_hash = hmac.new(
+        secret_key,
+        data_check_string.encode(),
+        hashlib.sha256
+    ).hexdigest()
+
+    return hmac.compare_digest(calculated_hash, received_hash)
 
 # Routes
 @app.route('/')
@@ -1467,6 +1497,68 @@ def create_admin():
         logger.error(f"Create admin error: {e}")
         conn.close()
         return jsonify({'success': False, 'message': 'Failed to create admin'})
+@app.route("/login/telegram")
+def login_telegram():
+    tg_data = dict(request.args)
+
+    # 1) Verify Telegram signature
+    if not verify_telegram_auth(tg_data, TELEGRAM_BOT_TOKEN):
+        return "Invalid Telegram login data", 400
+
+    # 2) auth_date freshness check (24 hours)
+    try:
+        auth_date = int(tg_data.get("auth_date", "0"))
+    except ValueError:
+        return "Invalid auth_date", 400
+
+    if abs(int(time.time()) - auth_date) > 86400:
+        return "Telegram login expired", 400
+
+    # 3) Telegram user ID
+    tg_id = tg_data.get("id")
+    if not tg_id:
+        return "Missing Telegram ID", 400
+
+    # Telegram provides no email → use synthetic email
+    synthetic_email = f"tg_{tg_id}@telegram.local"
+
+    conn = get_db()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "SELECT id, is_admin, is_banned FROM users WHERE email = ?",
+            (synthetic_email,)
+        )
+        user = cursor.fetchone()
+
+        if user:
+            if user["is_banned"] == 1:
+                conn.close()
+                return "Your account is banned", 403
+
+            user_id = user["id"]
+            is_admin = user["is_admin"]
+        else:
+            cursor.execute(
+                "INSERT INTO users (email, password_hash) VALUES (?, ?)",
+                (synthetic_email, generate_password_hash("telegram_login_user"))
+            )
+            conn.commit()
+            user_id = cursor.lastrowid
+            is_admin = 0
+
+        conn.close()
+
+        session["user_id"] = user_id
+        session["is_admin"] = is_admin
+        session.permanent = True
+
+        return redirect("/")
+
+    except Exception as e:
+        conn.close()
+        logger.error(f"Telegram login error: {e}")
+        return "Login failed", 500
 
 @app.route('/admin/admins/delete/<int:admin_id>', methods=['POST'])
 @admin_required

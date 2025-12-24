@@ -494,14 +494,6 @@
         text-shadow: none;
       }
 
-      .facebook-btn svg path {
-        fill: #1877f2;
-      }
-
-      .facebook-btn span {
-        color: #1877f2;
-      }
-
       .form-group {
         margin-bottom: 20px;
       }
@@ -1843,12 +1835,28 @@
             <ul>
               <li><a href="#" data-section="home">Home</a></li>
               <li><a href="#" data-section="courses">Courses</a></li>
-              <li><a href="#" data-section="support" style="display: none">Support</a></li>
+              <li>
+                <a href="#" data-section="support" style="display: none"
+                  >Support</a
+                >
+              </li>
               <li><a href="#" id="contact-link">Contact Us</a></li>
-              <li><a href="#" data-section="auth" style="display: none">Login</a></li>
-              <li><a href="#" data-section="auth" style="display: none">Register</a></li>
-              <li><a href="#" id="logout-link" style="display: none">Logout</a></li>
-              <li><a href="#" data-section="admin-dashboard" style="display: none">Admin</a></li>
+              <li>
+                <a href="#" data-section="auth" style="display: none">Login</a>
+              </li>
+              <li>
+                <a href="#" data-section="auth" style="display: none"
+                  >Register</a
+                >
+              </li>
+              <li>
+                <a href="#" id="logout-link" style="display: none">Logout</a>
+              </li>
+              <li>
+                <a href="#" data-section="admin-dashboard" style="display: none"
+                  >Admin</a
+                >
+              </li>
             </ul>
           </nav>
           <button class="mobile-menu-btn">
@@ -1863,7 +1871,11 @@
     <nav class="mobile-menu">
       <div class="mobile-menu-header">
         <div class="logo">
-          <img src="../static/images/logohn.jpg" alt="logo" style="height: 30px;" />
+          <img
+            src="../static/images/logohn.jpg"
+            alt="logo"
+            style="height: 30px"
+          />
           Han Nay Japanese
         </div>
         <button class="mobile-menu-close">
@@ -1871,14 +1883,44 @@
         </button>
       </div>
       <ul class="mobile-nav-list">
-        <li class="mobile-nav-item"><a href="#" data-section="home"><i class="fas fa-home"></i> Home</a></li>
-        <li class="mobile-nav-item"><a href="#" data-section="courses"><i class="fas fa-book"></i> Courses</a></li>
-        <li class="mobile-nav-item"><a href="#" data-section="support" style="display: none"><i class="fas fa-headset"></i> Support</a></li>
-        <li class="mobile-nav-item"><a href="#" id="mobile-contact-link"><i class="fas fa-phone"></i> Contact Us</a></li>
-        <li class="mobile-nav-item"><a href="#" data-section="auth" style="display: none"><i class="fas fa-sign-in-alt"></i> Login</a></li>
-        <li class="mobile-nav-item"><a href="#" data-section="auth" style="display: none"><i class="fas fa-user-plus"></i> Register</a></li>
-        <li class="mobile-nav-item"><a href="#" id="mobile-logout-link" style="display: none"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-        <li class="mobile-nav-item"><a href="#" data-section="admin-dashboard" style="display: none"><i class="fas fa-user-shield"></i> Admin</a></li>
+        <li class="mobile-nav-item">
+          <a href="#" data-section="home"><i class="fas fa-home"></i> Home</a>
+        </li>
+        <li class="mobile-nav-item">
+          <a href="#" data-section="courses"
+            ><i class="fas fa-book"></i> Courses</a
+          >
+        </li>
+        <li class="mobile-nav-item">
+          <a href="#" data-section="support" style="display: none"
+            ><i class="fas fa-headset"></i> Support</a
+          >
+        </li>
+        <li class="mobile-nav-item">
+          <a href="#" id="mobile-contact-link"
+            ><i class="fas fa-phone"></i> Contact Us</a
+          >
+        </li>
+        <li class="mobile-nav-item">
+          <a href="#" data-section="auth" style="display: none"
+            ><i class="fas fa-sign-in-alt"></i> Login</a
+          >
+        </li>
+        <li class="mobile-nav-item">
+          <a href="#" data-section="auth" style="display: none"
+            ><i class="fas fa-user-plus"></i> Register</a
+          >
+        </li>
+        <li class="mobile-nav-item">
+          <a href="#" id="mobile-logout-link" style="display: none"
+            ><i class="fas fa-sign-out-alt"></i> Logout</a
+          >
+        </li>
+        <li class="mobile-nav-item">
+          <a href="#" data-section="admin-dashboard" style="display: none"
+            ><i class="fas fa-user-shield"></i> Admin</a
+          >
+        </li>
       </ul>
     </nav>
 
@@ -1989,15 +2031,25 @@
               </svg>
               <span>Login with Google</span>
             </button>
-            <button class="btn-165 facebook-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216 216">
-                <path
-                  fill="#1877F2"
-                  d="M204.1 0H11.9C5.3 0 0 5.3 0 11.9v192.2c0 6.6 5.3 11.9 11.9 11.9h103.5V132.1H89.2V99.1h26.2V77.3c0-26 15.9-40.2 39.1-40.2 11.1 0 20.6.8 23.4 1.2v27.1h-16c-12.5 0-15 5.9-15 14.6v19.1h30l-3.9 33h-26.1V216h51.2c6.6 0 11.9-5.3 11.9-11.9V11.9c0-6.6-5.3-11.9-11.9-11.9z"
-                />
-              </svg>
-              <span>Login with Facebook</span>
-            </button>
+            <!-- Telegram Login Widget -->
+            <div
+              style="
+                margin-top: 10px;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+              "
+            >
+              <script
+                async
+                src="https://telegram.org/js/telegram-widget.js?22"
+                data-telegram-login="hannayjpcenter_bot"
+                data-size="large"
+                data-userpic="false"
+                data-auth-url="https://www.hannayjapaneselanguagecenter.online/login/telegram"
+                data-request-access="write"
+              ></script>
+            </div>
 
             <div class="form-toggle">
               Don't have an account? <a href="#" id="show-register">Register</a>
@@ -2362,7 +2414,12 @@
         <span>Support</span>
         <span class="notification-indicator" style="display: none"></span>
       </a>
-      <a href="#" class="mobile-bottom-nav-item" id="mobile-profile-link" data-section="auth">
+      <a
+        href="#"
+        class="mobile-bottom-nav-item"
+        id="mobile-profile-link"
+        data-section="auth"
+      >
         <i class="fas fa-user"></i>
         <span>Profile</span>
       </a>
@@ -2666,13 +2723,15 @@
       let quizScore = 0;
 
       // DOM elements
-      const sections = document.querySelectorAll('.section');
-      const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-      const mobileMenuClose = document.querySelector('.mobile-menu-close');
-      const mobileMenu = document.querySelector('.mobile-menu');
-      const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
-      const navLinks = document.querySelectorAll('a[data-section]');
-      const bottomNavItems = document.querySelectorAll('.mobile-bottom-nav-item');
+      const sections = document.querySelectorAll(".section");
+      const mobileMenuBtn = document.querySelector(".mobile-menu-btn");
+      const mobileMenuClose = document.querySelector(".mobile-menu-close");
+      const mobileMenu = document.querySelector(".mobile-menu");
+      const mobileMenuOverlay = document.querySelector(".mobile-menu-overlay");
+      const navLinks = document.querySelectorAll("a[data-section]");
+      const bottomNavItems = document.querySelectorAll(
+        ".mobile-bottom-nav-item"
+      );
       const homeSection = document.getElementById("home-section");
       const authSection = document.getElementById("auth-section");
       const coursesSection = document.getElementById("courses-section");
@@ -2785,67 +2844,71 @@
       };
 
       // Mobile menu functionality
-      mobileMenuBtn.addEventListener('click', () => {
-        mobileMenu.classList.add('active');
-        mobileMenuOverlay.classList.add('active');
+      mobileMenuBtn.addEventListener("click", () => {
+        mobileMenu.classList.add("active");
+        mobileMenuOverlay.classList.add("active");
       });
 
-      mobileMenuClose.addEventListener('click', () => {
-        mobileMenu.classList.remove('active');
-        mobileMenuOverlay.classList.remove('active');
+      mobileMenuClose.addEventListener("click", () => {
+        mobileMenu.classList.remove("active");
+        mobileMenuOverlay.classList.remove("active");
       });
 
-      mobileMenuOverlay.addEventListener('click', () => {
-        mobileMenu.classList.remove('active');
-        mobileMenuOverlay.classList.remove('active');
+      mobileMenuOverlay.addEventListener("click", () => {
+        mobileMenu.classList.remove("active");
+        mobileMenuOverlay.classList.remove("active");
       });
 
       // Navigation functionality
       function showSection(sectionId) {
         // Hide all sections
-        sections.forEach(section => {
-          section.classList.remove('active');
+        sections.forEach((section) => {
+          section.classList.remove("active");
         });
 
         // Show selected section
-        const targetSection = document.getElementById(sectionId + '-section');
+        const targetSection = document.getElementById(sectionId + "-section");
         if (targetSection) {
-          targetSection.classList.add('active');
+          targetSection.classList.add("active");
         }
 
         // Update active navigation items
-        navLinks.forEach(link => {
-          link.classList.remove('active');
+        navLinks.forEach((link) => {
+          link.classList.remove("active");
           if (link.dataset.section === sectionId) {
-            link.classList.add('active');
+            link.classList.add("active");
           }
         });
 
         // Update bottom navigation
-        bottomNavItems.forEach(item => {
-          item.classList.remove('active');
+        bottomNavItems.forEach((item) => {
+          item.classList.remove("active");
           if (item.dataset.section === sectionId) {
-            item.classList.add('active');
+            item.classList.add("active");
           }
         });
 
         // Close mobile menu if open
-        mobileMenu.classList.remove('active');
-        mobileMenuOverlay.classList.remove('active');
+        mobileMenu.classList.remove("active");
+        mobileMenuOverlay.classList.remove("active");
 
         // Load specific section data
-        if (sectionId === 'courses') {
+        if (sectionId === "courses") {
           loadCourses();
-        } else if (sectionId === 'support' && currentUser) {
+        } else if (sectionId === "support" && currentUser) {
           loadUserMessages();
-        } else if (sectionId === 'admin-dashboard' && currentUser && currentUser.is_admin) {
+        } else if (
+          sectionId === "admin-dashboard" &&
+          currentUser &&
+          currentUser.is_admin
+        ) {
           loadAdminDashboard();
         }
       }
 
       // Add event listeners to navigation links
-      navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
+      navLinks.forEach((link) => {
+        link.addEventListener("click", (e) => {
           e.preventDefault();
           const sectionId = link.dataset.section;
           if (sectionId) {
@@ -2855,8 +2918,8 @@
       });
 
       // Bottom navigation event listeners
-      bottomNavItems.forEach(item => {
-        item.addEventListener('click', (e) => {
+      bottomNavItems.forEach((item) => {
+        item.addEventListener("click", (e) => {
           e.preventDefault();
           const sectionId = item.dataset.section;
           if (sectionId) {
@@ -2866,16 +2929,16 @@
       });
 
       // Contact modal
-      contactLink.addEventListener('click', (e) => {
+      contactLink.addEventListener("click", (e) => {
         e.preventDefault();
-        contactModal.classList.add('active');
+        contactModal.classList.add("active");
       });
 
-      mobileContactLink.addEventListener('click', (e) => {
+      mobileContactLink.addEventListener("click", (e) => {
         e.preventDefault();
-        contactModal.classList.add('active');
-        mobileMenu.classList.remove('active');
-        mobileMenuOverlay.classList.remove('active');
+        contactModal.classList.add("active");
+        mobileMenu.classList.remove("active");
+        mobileMenuOverlay.classList.remove("active");
       });
 
       // Initialize Socket.IO connection
@@ -3392,17 +3455,17 @@
           loadCaptcha();
         });
 
-      document.querySelectorAll(".close-modal").forEach(button => {
+      document.querySelectorAll(".close-modal").forEach((button) => {
         button.addEventListener("click", () => {
-          button.closest('.modal').classList.remove('active');
-          if (button.closest('#course-modal')) {
+          button.closest(".modal").classList.remove("active");
+          if (button.closest("#course-modal")) {
             resetModal();
           }
         });
       });
 
       window.addEventListener("click", (e) => {
-        if (e.target.classList.contains('modal')) {
+        if (e.target.classList.contains("modal")) {
           e.target.classList.remove("active");
           if (e.target.id === "course-modal") {
             resetModal();
@@ -3538,52 +3601,70 @@
         // Update Desktop Nav
         if (currentUser) {
           // Hide login/register, show logout
-          document.querySelectorAll('a[data-section="auth"]').forEach(link => {
-            link.style.display = 'none';
-          });
-          logoutLink.style.display = 'block';
-          mobileLogoutLink.style.display = 'block';
-          
+          document
+            .querySelectorAll('a[data-section="auth"]')
+            .forEach((link) => {
+              link.style.display = "none";
+            });
+          logoutLink.style.display = "block";
+          mobileLogoutLink.style.display = "block";
+
           // Show/hide support based on user type
-          const supportLinks = document.querySelectorAll('a[data-section="support"]');
-          supportLinks.forEach(link => {
-            link.style.display = currentUser.is_admin ? 'none' : 'block';
+          const supportLinks = document.querySelectorAll(
+            'a[data-section="support"]'
+          );
+          supportLinks.forEach((link) => {
+            link.style.display = currentUser.is_admin ? "none" : "block";
           });
 
           // Show admin link if admin
-          const adminLinks = document.querySelectorAll('a[data-section="admin-dashboard"]');
-          adminLinks.forEach(link => {
-            link.style.display = currentUser.is_admin ? 'block' : 'none';
+          const adminLinks = document.querySelectorAll(
+            'a[data-section="admin-dashboard"]'
+          );
+          adminLinks.forEach((link) => {
+            link.style.display = currentUser.is_admin ? "block" : "none";
           });
 
           // Update mobile profile link
-          mobileProfileLink.querySelector('i').className = currentUser.is_admin ? 'fas fa-user-shield' : 'fas fa-user';
-          mobileProfileLink.querySelector('span').textContent = currentUser.is_admin ? 'Admin' : 'Profile';
+          mobileProfileLink.querySelector("i").className = currentUser.is_admin
+            ? "fas fa-user-shield"
+            : "fas fa-user";
+          mobileProfileLink.querySelector("span").textContent =
+            currentUser.is_admin ? "Admin" : "Profile";
         } else {
           // Show login/register, hide logout
-          document.querySelectorAll('a[data-section="auth"]').forEach(link => {
-            link.style.display = 'block';
-          });
-          logoutLink.style.display = 'none';
-          mobileLogoutLink.style.display = 'none';
-          
+          document
+            .querySelectorAll('a[data-section="auth"]')
+            .forEach((link) => {
+              link.style.display = "block";
+            });
+          logoutLink.style.display = "none";
+          mobileLogoutLink.style.display = "none";
+
           // Hide support and admin links
-          document.querySelectorAll('a[data-section="support"]').forEach(link => {
-            link.style.display = 'none';
-          });
-          document.querySelectorAll('a[data-section="admin-dashboard"]').forEach(link => {
-            link.style.display = 'none';
-          });
+          document
+            .querySelectorAll('a[data-section="support"]')
+            .forEach((link) => {
+              link.style.display = "none";
+            });
+          document
+            .querySelectorAll('a[data-section="admin-dashboard"]')
+            .forEach((link) => {
+              link.style.display = "none";
+            });
 
           // Reset mobile profile link
-          mobileProfileLink.querySelector('i').className = 'fas fa-user';
-          mobileProfileLink.querySelector('span').textContent = 'Profile';
+          mobileProfileLink.querySelector("i").className = "fas fa-user";
+          mobileProfileLink.querySelector("span").textContent = "Profile";
         }
 
         // Update mobile bottom nav
-        const supportBottomNav = document.querySelector('.mobile-bottom-nav-item[data-section="support"]');
+        const supportBottomNav = document.querySelector(
+          '.mobile-bottom-nav-item[data-section="support"]'
+        );
         if (supportBottomNav) {
-          supportBottomNav.style.display = currentUser && !currentUser.is_admin ? 'flex' : 'none';
+          supportBottomNav.style.display =
+            currentUser && !currentUser.is_admin ? "flex" : "none";
         }
       }
 
@@ -3592,9 +3673,13 @@
         let indicator;
 
         if (section === "support" || section === "teacher") {
-          indicator = document.querySelector('.mobile-bottom-nav-item[data-section="support"] .notification-indicator');
+          indicator = document.querySelector(
+            '.mobile-bottom-nav-item[data-section="support"] .notification-indicator'
+          );
         } else if (section === "admin") {
-          indicator = mobileProfileLink.querySelector('.notification-indicator');
+          indicator = mobileProfileLink.querySelector(
+            ".notification-indicator"
+          );
         }
 
         if (!indicator) {
@@ -3603,7 +3688,9 @@
           indicator.className = "notification-indicator";
 
           if (section === "support" || section === "teacher") {
-            const supportNav = document.querySelector('.mobile-bottom-nav-item[data-section="support"]');
+            const supportNav = document.querySelector(
+              '.mobile-bottom-nav-item[data-section="support"]'
+            );
             if (supportNav) {
               supportNav.appendChild(indicator);
             }
@@ -5577,19 +5664,19 @@
         checkLoginStatus();
 
         // Show home section by default
-        showSection('home');
+        showSection("home");
 
         // Add logout event listeners
-        logoutLink.addEventListener('click', (e) => {
+        logoutLink.addEventListener("click", (e) => {
           e.preventDefault();
           logout();
         });
 
-        mobileLogoutLink.addEventListener('click', (e) => {
+        mobileLogoutLink.addEventListener("click", (e) => {
           e.preventDefault();
           logout();
-          mobileMenu.classList.remove('active');
-          mobileMenuOverlay.classList.remove('active');
+          mobileMenu.classList.remove("active");
+          mobileMenuOverlay.classList.remove("active");
         });
 
         // Check if we're on a specific page based on URL
