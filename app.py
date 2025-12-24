@@ -1560,6 +1560,73 @@ def login_telegram():
         logger.error(f"Telegram login error: {e}")
         return "Login failed", 500
 
+@app.route("/login/telegram/json", methods=["POST"])
+def login_telegram_json():
+    tg_data = request.get_json(silent=True) or {}
+
+    # 1) Verify Telegram signature
+    if not verify_telegram_auth(tg_data, TELEGRAM_BOT_TOKEN):
+        return jsonify({"success": False, "message": "Invalid Telegram login data"}), 400
+
+    # 2) auth_date freshness check (24 hours)
+    try:
+        auth_date = int(tg_data.get("auth_date", "0"))
+    except ValueError:
+        return jsonify({"success": False, "message": "Invalid auth_date"}), 400
+
+    if abs(int(time.time()) - auth_date) > 86400:
+        return jsonify({"success": False, "message": "Telegram login expired"}), 400
+
+    # 3) Telegram user ID
+    tg_id = tg_data.get("id")
+    if not tg_id:
+        return jsonify({"success": False, "message": "Missing Telegram ID"}), 400
+
+    synthetic_email = f"tg_{tg_id}@telegram.local"
+
+    conn = get_db()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "SELECT id, is_admin, is_banned FROM users WHERE email = ?",
+            (synthetic_email,)
+        )
+        user = cursor.fetchone()
+
+        if user:
+            if user["is_banned"] == 1:
+                conn.close()
+                return jsonify({"success": False, "message": "Your account is banned"}), 403
+
+            user_id = user["id"]
+            is_admin = user["is_admin"]
+        else:
+            cursor.execute(
+                "INSERT INTO users (email, password_hash) VALUES (?, ?)",
+                (synthetic_email, generate_password_hash("telegram_login_user"))
+            )
+            conn.commit()
+            user_id = cursor.lastrowid
+            is_admin = 0
+
+        conn.close()
+
+        session["user_id"] = user_id
+        session["is_admin"] = is_admin
+        session.permanent = True
+
+        return jsonify({
+            "success": True,
+            "user_id": user_id,
+            "is_admin": is_admin,
+            "email": synthetic_email
+        })
+
+    except Exception as e:
+        conn.close()
+        logger.error(f"Telegram login error: {e}")
+        return jsonify({"success": False, "message": "Login failed"}), 500
+
 @app.route('/admin/admins/delete/<int:admin_id>', methods=['POST'])
 @admin_required
 def delete_admin(admin_id):
