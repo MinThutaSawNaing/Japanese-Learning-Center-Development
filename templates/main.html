@@ -494,6 +494,19 @@
         text-shadow: none;
       }
 
+      /* Make Telegram widget match btn-165 */
+      .telegram-btn-wrap {
+        padding: 0;                /* don’t let btn padding distort the widget */
+        justify-content: center;
+      }
+
+      /* Telegram injects an iframe/button — force full width */
+      .telegram-btn-wrap iframe {
+        width: 100% !important;
+        min-width: 100% !important;
+      }
+
+
       .form-group {
         margin-bottom: 20px;
       }
@@ -2032,9 +2045,7 @@
               <span>Login with Google</span>
             </button>
             <!-- Telegram Login -->
-            <div
-              style="margin-top: 10px; display: flex; justify-content: center"
-            >
+            <div class="btn-165 telegram-btn-wrap">
               <script
                 async
                 src="https://telegram.org/js/telegram-widget.js?22"
@@ -2046,6 +2057,7 @@
                 data-request-access="write"
               ></script>
             </div>
+
             <div class="form-toggle">
               Don't have an account? <a href="#" id="show-register">Register</a>
             </div>
