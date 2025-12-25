@@ -494,18 +494,6 @@
         text-shadow: none;
       }
 
-      /* Make Telegram widget match btn-165 */
-      .telegram-btn-wrap {
-        padding: 0;                /* don’t let btn padding distort the widget */
-        justify-content: center;
-      }
-
-      /* Telegram injects an iframe/button — force full width */
-      .telegram-btn-wrap iframe {
-        width: 100% !important;
-        min-width: 100% !important;
-      }
-
 
       .form-group {
         margin-bottom: 20px;
@@ -2044,19 +2032,14 @@
               </svg>
               <span>Login with Google</span>
             </button>
-            <!-- Telegram Login -->
-            <div class="btn-165 telegram-btn-wrap">
-              <script
-                async
-                src="https://telegram.org/js/telegram-widget.js?22"
-                data-telegram-login="hannayjpcenter_bot"
-                data-size="large"
-                data-radius="10"
-                data-userpic="false"
-                data-onauth="onTelegramAuth(user)"
-                data-request-access="write"
-              ></script>
-            </div>
+            <button class="btn-165 telegram-btn" id="telegram-login-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="24">
+                <path d="M120,0A120,120,0,1,0,240,120,120,120,0,0,0,120,0Z" fill="#27A7E7"/>
+                <path d="M57.4,118.9l113.6-43.9c5.3-1.9,9.9,1.3,8.2,9.4l-19.3,90.9c-1.4,6.4-5.3,8-10.7,5l-29.6-21.8-14.3,13.8c-1.6,1.6-2.9,2.9-5.9,2.9l2.1-30.1 54.8-49.5c2.4-2.1-.5-3.3-3.7-1.2l-67.7,42.6-29.2-9.1c-6.3-2-6.5-6.3,1.3-9.3Z" fill="#fff"/>
+              </svg>
+              <span>Login with Telegram</span>
+            </button>
+
 
             <div class="form-toggle">
               Don't have an account? <a href="#" id="show-register">Register</a>
@@ -2700,6 +2683,9 @@
       <i class="fas fa-circle"></i>
       <span>Disconnected</span>
     </div>
+
+    <script async src="https://telegram.org/js/telegram-widget.js?22"></script>
+
 
     <!-- Socket.IO Client Library -->
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
@@ -3527,6 +3513,7 @@
           notification.classList.remove("show");
         }, duration);
       }
+
 
       function handleGoogleAuthResponse() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -5773,6 +5760,29 @@
               window.location.href = "/login/google";
             });
         });
+      document
+        .getElementById("telegram-login-btn")
+        .addEventListener("click", () => {
+          if (!window.Telegram || !window.Telegram.Login) {
+            showNotification("Telegram login not ready. Try again.", "warning");
+            return;
+          }
+
+          Telegram.Login.auth(
+            {
+              bot_id: 8491652994,
+              request_access: true,
+            },
+            (user) => {
+              if (!user) {
+                showNotification("Telegram login cancelled", "warning");
+                return;
+              }
+              onTelegramAuth(user);
+            }
+          );
+        });
+
     </script>
   </body>
 </html>
