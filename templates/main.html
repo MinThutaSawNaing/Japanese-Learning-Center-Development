@@ -2442,20 +2442,28 @@
             <h4><i class="fas fa-folder-open"></i> Course Resources</h4>
             <div class="resources">
               <div class="resource-item">
-                <i class="fas fa-file-pdf"></i>
-                <a href="#" target="_blank">Textbook PDF</a>
+                <i class="fas fa-book-open"></i>
+                <a href="#" target="_blank">Meaning</a>
               </div>
+
               <div class="resource-item">
-                <i class="fas fa-camera"></i>
-                <a href="#" target="_blank">Videos Materials</a>
+                <i class="fas fa-spell-check"></i>
+                <a href="#" target="_blank">Grammar</a>
               </div>
+
               <div class="resource-item">
-                <i class="fas fa-pencil-alt"></i>
-                <a href="#" target="_blank">Practice Exercises</a>
+                <i class="fas fa-language"></i>
+                <a href="#" target="_blank">Kanji</a>
               </div>
+
               <div class="resource-item">
-                <i class="fas fa-list"></i>
-                <a href="#" target="_blank">Vocabulary List</a>
+                <i class="fas fa-headphones"></i>
+                <a href="#" target="_blank">Listening</a>
+              </div>
+
+              <div class="resource-item">
+                <i class="fas fa-file-alt"></i>
+                <a href="#" target="_blank">Old Questions</a>
               </div>
             </div>
           </div>
@@ -2801,40 +2809,42 @@
       // Course resources for each level
       const courseResources = {
         N5: {
-          textbook: "https://example.com/n5-textbook.pdf",
-          video:
-            "https://drive.google.com/drive/folders/1oxvD5G34t2xKPilysqDPGuYF0HcXU5XL?usp=drive_link",
-          exercise: "https://example.com/n5-exercises",
-          vocabulary: "https://example.com/n5-vocabulary",
+          basic: "https://drive.google.com/drive/folders/1JTKeMYt-Jpy6dFD2PvZRPJvb1Gkxzu8S?usp=drive_link",
+          meaning: "https://drive.google.com/drive/folders/1MMvI0VaQcnd6TestHw3audy4LTGDp0BD?usp=drive_link",
+          grammar: "https://drive.google.com/drive/folders/1JW46l_emiEt4Gv_FTXQTr32lGVOfioHj?usp=drive_link",
+          kanji: "https://drive.google.com/drive/folders/1ppEJRriyqileyJM4VYcpeRpKnWhvXeME?usp=drive_link",
+          listening: "https://drive.google.com/drive/folders/10Vp8hlIEFeXuIpJtqN5xL4UdVLvDZbZd?usp=drive_link",
         },
         N4: {
-          textbook: "https://example.com/n4-textbook.pdf",
-          video:
-            "https://drive.google.com/drive/folders/1BPU7XL8ELqARmIVswm313vpe8t746B73?usp=drive_link",
-          exercise: "https://example.com/n4-exercises",
-          vocabulary: "https://example.com/n4-vocabulary",
+          meaning: "https://drive.google.com/drive/folders/1AHU69wYZv-pEtttJYgry5NipeFD4iWP7?usp=drive_link",
+          grammar: "https://drive.google.com/drive/folders/1jMvH7DAjl6Pc_0R1JF5FP624DjIkMmn3?usp=drive_link",
+          kanji: "https://drive.google.com/drive/folders/10TSLFU-xT07byrOTX2RyRuvcmjt0-hU1?usp=drive_link",
+          listening: "https://drive.google.com/drive/folders/1to-HS_Tgcglc0Mil7d_955oXnIZyxaZA?usp=drive_link",
+          oldQuestions: "https://u.pcloud.link/publink/show?code=kZp7IP5ZyVhu9YjJEu7eABskhzrGlzjHa7fy",
         },
         N3: {
-          textbook: "https://example.com/n3-textbook.pdf",
-          video:
-            "https://drive.google.com/drive/folders/1-5AERxMuhMJellMg_o2zucmtVgjOcNAL?usp=drive_link",
-          exercise: "https://example.com/n3-exercises",
-          vocabulary: "https://example.com/n3-vocabulary",
+          meaning: "https://drive.google.com/drive/folders/1lKEatQmwDp6jX1xPP9NUlh_f7VYu0E36?usp=drive_link",
+          grammar: "https://drive.google.com/drive/folders/1zJ9VfOrX1x9gh8f6o4oCM0S7srpqeTM7?usp=drive_link",
+          kanji: "https://drive.google.com/drive/folders/1VkII3L4c4BKTaUACIYZJOeh8U8U87acq?usp=drive_link",
+          listening: "https://u.pcloud.link/publink/show?code=kZzAUP5ZISMEjxocfR44BaHV0MJthFOHiPEk",
+          oldQuestions: "https://u.pcloud.link/publink/show?code=kZd6UP5ZR4DBjFetu5jCqUTdUdfuams4n6N7",
         },
         N2: {
-          textbook: "https://example.com/n2-textbook.pdf",
-          video:
-            "https://drive.google.com/drive/folders/1VGUKM8RTEcRv-Ym7HWsB1GjwIsZf8gws?usp=drive_link",
-          exercise: "https://example.com/n2-exercises",
-          vocabulary: "https://example.com/n2-vocabulary",
+          meaning: "https://example.com/n2-meaning",
+          grammar: "https://example.com/n2-grammar",
+          kanji: "https://example.com/n2-kanji",
+          listening: "https://example.com/n2-listening",
+          oldQuestions: "https://example.com/n2-old-questions",
         },
         N1: {
-          textbook: "https://example.com/n1-textbook.pdf",
-          video: "https://example.com/n1-videos",
-          exercise: "https://example.com/n1-exercises",
-          vocabulary: "https://example.com/n1-vocabulary",
+          meaning: "https://drive.google.com/drive/folders/17ZCSqT-PKuRsXWMeFXFXNDG41whhUxWt?usp=drive_link",
+          grammar: "https://drive.google.com/drive/folders/1VwNTo-kT1ZHh-Ya2C-OgkkbEjNpLrwdg?usp=drive_link",
+          kanji: "https://drive.google.com/drive/folders/1oEk0WodYEkiVcCjx0OGs48PEuVijnYl5?usp=drive_link",
+          listening: "https://drive.google.com/drive/folders/1sZNPuoaxpE25CN2-XlEPo1_sOzxgltR_?usp=drive_link",
+          oldQuestions: "https://u.pcloud.link/publink/show?code=kZCFIP5Z1P3KyxgubCkeH1kjT7St3XLxDiJX",
         },
       };
+
 
       // Mobile menu functionality
       mobileMenuBtn.addEventListener("click", () => {
@@ -4052,15 +4062,40 @@
 
       function updateResourceLinks(courseLevel) {
         const resources = courseResources[courseLevel];
-        if (resources) {
-          // Update all resource links based on course level
-          const resourceItems = document.querySelectorAll(".resource-item");
-          resourceItems[0].querySelector("a").href = resources.textbook;
-          resourceItems[1].querySelector("a").href = resources.video;
-          resourceItems[2].querySelector("a").href = resources.exercise;
-          resourceItems[3].querySelector("a").href = resources.vocabulary;
+        if (!resources) return;
+
+        const resourceItems = document.querySelectorAll(".resource-item");
+
+        // We will display 5 rows always
+        const isN5 = courseLevel === "N5";
+
+        const labels = isN5
+          ? ["Basic Level & Old Questions", "Meaning", "Grammar", "Kanji", "Listening"]
+          : ["Meaning", "Grammar", "Kanji", "Listening", "Old Questions"];
+
+        const links = isN5
+          ? [
+              resources.basic,
+              resources.meaning,
+              resources.grammar,
+              resources.kanji,
+              resources.listening,
+            ]
+          : [
+              resources.meaning,
+              resources.grammar,
+              resources.kanji,
+              resources.listening,
+              resources.oldQuestions,
+            ];
+
+        for (let i = 0; i < 5; i++) {
+          const a = resourceItems[i].querySelector("a");
+          a.href = links[i] || "#";
+          a.textContent = labels[i];
         }
       }
+
 
       function showCourseModal() {
         // Check if user is logged in
